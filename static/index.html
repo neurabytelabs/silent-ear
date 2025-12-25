@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silent-Ear | Industrial Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Courier New', Courier, monospace; }
+        .monitor-panel { background: #1e293b; border: 1px solid #334155; border-radius: 4px; }
+        .blinking { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="h-screen flex flex-col p-4">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
+        <div>
+            <h1 class="text-3xl font-bold text-blue-400 tracking-wider">SILENT-EAR</h1>
+            <p class="text-xs text-gray-500">CONATUS AGENT #37 // INDUSTRIAL ANOMALY DETECTOR</p>
+        </div>
+        <div class="text-right">
+            <p id="timestamp" class="text-sm text-yellow-500">WAITING FOR DATA...</p>
+            <p id="file-id" class="text-xs text-gray-600">FILE: ---</p>
+        </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-12 gap-4 flex-grow">
+        
+        <!-- Left Column: Status & Health -->
+        <div class="col-span-12 md:col-span-4 flex flex-col gap-4">
+            
+            <!-- Health Score Card -->
+            <div class="monitor-panel p-6 flex flex-col items-center justify-center flex-grow">
+                <h2 class="text-gray-400 mb-2 uppercase tracking-widest text-sm">System Health</h2>
+                <div class="relative w-48 h-48 flex items-center justify-center rounded-full border-8 border-gray-700" id="health-ring">
+                    <span id="health-value" class="text-5xl font-bold text-white">---</span>
+                    <span class="absolute bottom-10 text-xs text-gray-500">%</span>
+                </div>
+            </div>
+
+            <!-- Status Indicator -->
+            <div class="monitor-panel p-6 text-center">
+                <h2 class="text-gray-400 mb-2 uppercase tracking-widest text-sm">Operational Status</h2>
+                <div id="status-box" class="py-4 px-8 bg-gray-800 rounded text-xl font-bold border border-gray-600">
+                    INITIALIZING
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Live Charts -->
+        <div class="col-span-12 md:col-span-8 flex flex-col gap-4">
+            <div class="monitor-panel p-4 flex-grow relative">
+                <h2 class="text-gray-400 mb-2 uppercase tracking-widest text-sm">Vibration Signature (RMS)</h2>
+                <canvas id="vibrationChart"></canvas>
+            </div>
+            
+            <!-- Sensor Values Grid -->
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+                <div class="monitor-panel p-2"><span class="text-gray-500">B1_X</span><br><span id="val-0" class="text-blue-300 font-bold">---</span></div>
+                <div class="monitor-panel p-2"><span class="text-gray-500">B1_Y</span><br><span id="val-1" class="text-blue-300 font-bold">---</span></div>
+                <div class="monitor-panel p-2"><span class="text-gray-500">B2_X</span><br><span id="val-2" class="text-blue-300 font-bold">---</span></div>
+                <div class="monitor-panel p-2"><span class="text-gray-500">B2_Y</span><br><span id="val-3" class="text-blue-300 font-bold">---</span></div>
+                <div class="monitor-panel p-2"><span class="text-gray-500">B3_X</span><br><span id="val-4" class="text-blue-300 font-bold">---</span></div>
+                <div class="monitor-panel p-2"><span class="text-gray-500">B3_Y</span><br><span id="val-5" class="text-blue-300 font-bold">---</span></div>
+                <div class="monitor-panel p-2"><span class="text-gray-500">B4_X</span><br><span id="val-6" class="text-blue-300 font-bold">---</span></div>
+                <div class="monitor-panel p-2"><span class="text-gray-500">B4_Y</span><br><span id="val-7" class="text-blue-300 font-bold">---</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart Setup
+        const ctx = document.getElementById('vibrationChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(50).fill(''),
+                datasets: [
+                    { label: 'B4_X (Critical)', data: Array(50).fill(0), borderColor: '#ef4444', borderWidth: 2, tension: 0.4, pointRadius: 0 },
+                    { label: 'B4_Y (Critical)', data: Array(50).fill(0), borderColor: '#f97316', borderWidth: 2, tension: 0.4, pointRadius: 0 },
+                    { label: 'B1_X (Ref)', data: Array(50).fill(0), borderColor: '#3b82f6', borderWidth: 1, tension: 0.4, pointRadius: 0 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { labels: { color: '#94a3b8' } } }
+            }
+        });
+
+        const statusBox = document.getElementById('status-box');
+        const healthValue = document.getElementById('health-value');
+        const healthRing = document.getElementById('health-ring');
+        const timestampEl = document.getElementById('timestamp');
+        const fileIdEl = document.getElementById('file-id');
+
+        async function fetchData() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+
+                // Update Text
+                timestampEl.innerText = data.current_file; // Using current_file as timestamp
+                fileIdEl.innerText = `MODE: ${data.is_training ? 'TRAINING' : 'INFERENCE'}`;
+                
+                // Update Health
+                const healthPct = (data.health_score * 100).toFixed(1);
+                healthValue.innerText = healthPct;
+                
+                // Color Logic
+                let colorClass = 'text-green-500 border-green-500';
+                let statusColor = 'bg-green-900 text-green-200';
+                
+                if (data.status === 'WARNING') {
+                    colorClass = 'text-yellow-500 border-yellow-500';
+                    statusColor = 'bg-yellow-900 text-yellow-200';
+                } else if (data.status === 'CRITICAL') {
+                    colorClass = 'text-red-500 border-red-500';
+                    statusColor = 'bg-red-900 text-red-200 blinking';
+                } else if (data.status === 'TRAINING') {
+                    colorClass = 'text-blue-500 border-blue-500';
+                    statusColor = 'bg-blue-900 text-blue-200';
+                }
+
+                healthRing.className = `relative w-48 h-48 flex items-center justify-center rounded-full border-8 ${colorClass.split(' ')[1]}`; // just border color
+                healthValue.className = `text-5xl font-bold ${colorClass.split(' ')[0]}`;
+                statusBox.className = `py-4 px-8 rounded text-xl font-bold border border-gray-600 ${statusColor}`;
+                statusBox.innerText = data.status;
+
+                // Update Sensor Grid
+                if (data.latest_readings.length === 8) {
+                    for(let i=0; i<8; i++) {
+                        document.getElementById(`val-${i}`).innerText = data.latest_readings[i].toFixed(4);
+                    }
+
+                    // Update Chart (Shift Buffer)
+                    chart.data.datasets[0].data.shift();
+                    chart.data.datasets[0].data.push(data.latest_readings[6]); // B4_X
+                    
+                    chart.data.datasets[1].data.shift();
+                    chart.data.datasets[1].data.push(data.latest_readings[7]); // B4_Y
+                    
+                    chart.data.datasets[2].data.shift();
+                    chart.data.datasets[2].data.push(data.latest_readings[0]); // B1_X
+                    
+                    chart.update();
+                }
+
+            } catch (err) {
+                console.error("Connection lost", err);
+            }
+        }
+
+        setInterval(fetchData, 100);
+    </script>
+</body>
+</html>

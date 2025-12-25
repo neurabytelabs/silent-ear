@@ -1,0 +1,6 @@
+data/
+*.7z
+*.rar
+*.csv
+*.log
+target/
