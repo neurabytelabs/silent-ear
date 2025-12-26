@@ -59,8 +59,7 @@ fn init_tracing(config: &AppConfig) {
         _ => Level::INFO,
     };
 
-    let filter = EnvFilter::from_default_env()
-        .add_directive(level.into());
+    let filter = EnvFilter::from_default_env().add_directive(level.into());
 
     if config.logging.json {
         tracing_subscriber::fmt()
@@ -87,10 +86,7 @@ async fn main() -> anyhow::Result<()> {
     // Initialize tracing
     init_tracing(&config);
 
-    info!(
-        version = env!("CARGO_PKG_VERSION"),
-        "Silent-Ear starting"
-    );
+    info!(version = env!("CARGO_PKG_VERSION"), "Silent-Ear starting");
 
     let args: Vec<String> = env::args().collect();
     let simulate_mode = args.contains(&"--simulate".to_string());
@@ -222,12 +218,13 @@ async fn run_api_server(
 
     info!(address = %addr, "API server starting");
 
-    let listener = tokio::net::TcpListener::bind(addr)
-        .await
-        .map_err(|e| SilentEarError::ServerBind {
-            address: addr.to_string(),
-            source: e,
-        })?;
+    let listener =
+        tokio::net::TcpListener::bind(addr)
+            .await
+            .map_err(|e| SilentEarError::ServerBind {
+                address: addr.to_string(),
+                source: e,
+            })?;
 
     axum::serve(listener, app)
         .await
@@ -290,8 +287,15 @@ fn run_processing_loop(
     // CSV Writer
     let mut wtr = Writer::from_path(output_file)?;
     let headers = [
-        "Timestamp", "B1_X", "B1_Y", "B2_X", "B2_Y",
-        "B3_X", "B3_Y", "B4_X", "B4_Y",
+        "Timestamp",
+        "B1_X",
+        "B1_Y",
+        "B2_X",
+        "B2_Y",
+        "B3_X",
+        "B3_Y",
+        "B4_X",
+        "B4_Y",
     ];
     wtr.write_record(headers)?;
     wtr.flush()?;

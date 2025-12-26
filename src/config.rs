@@ -179,15 +179,15 @@ impl AppConfig {
                 .try_parsing(true),
         );
 
-        let config = builder
-            .build()
+        let config = builder.build().map_err(|e| SilentEarError::Config {
+            message: e.to_string(),
+        })?;
+
+        config
+            .try_deserialize()
             .map_err(|e| SilentEarError::Config {
                 message: e.to_string(),
-            })?;
-
-        config.try_deserialize().map_err(|e| SilentEarError::Config {
-            message: e.to_string(),
-        })
+            })
     }
 }
 
