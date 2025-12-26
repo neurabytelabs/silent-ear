@@ -1,76 +1,179 @@
-# Silent-Ear (Conatus Agent #37)
-**Industrial Edge AI Anomaly Detection System**
+# 🔊 Silent-Ear
 
-Silent-Ear is a lightweight, high-performance predictive maintenance agent built in Rust. It analyzes high-frequency vibration data from industrial machinery to detect bearing faults before catastrophic failure occurs.
+[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/tests-5%20passing-brightgreen.svg)]()
 
-Designed according to the **Conatus** philosophy: Self-contained, efficient, and resilient.
+**Industrial Edge AI Anomaly Detection System for Predictive Maintenance**
 
-## Features
+Silent-Ear is a lightweight, high-performance agent that analyzes vibration data from industrial machinery to detect bearing faults *before* catastrophic failure occurs.
 
-- **🚀 High Performance:** Processes 40M+ data points in under 1.5 seconds on commodity hardware.
-- **🧠 Statistical AI:** Uses a statistical anomaly detector (Mean + 3σ) to learn "normal" behavior without heavy ML frameworks.
-- **❤️ Health Scoring:** Calculates a real-time Health Score (0-100%) quantifying machine degradation.
-- **🔌 Microservice Architecture:** Exposes a REST API (`/api/status`) for network integration.
-- **📊 Real-time Dashboard:** Includes a built-in web dashboard for live visualization of sensor data and alerts.
+> 🏭 *"Your factory's sense of hearing."*
 
-## Architecture
+## ✨ Features
 
-The system consists of three main components running concurrently:
+- **🚀 High Performance** — Processes 40M+ data points in under 1.5 seconds
+- **🧠 Statistical AI** — Uses Mean + 3σ anomaly detection (no heavy ML frameworks)
+- **❤️ Health Scoring** — Real-time 0-100% health score for machine degradation
+- **🔌 REST API** — JSON endpoints for network integration
+- **📊 Live Dashboard** — Built-in HTML5 visualization
+- **🐳 Docker Ready** — One command deployment
 
-1.  **DSP Engine (Thread A):** Reads raw sensor data (IMS format), calculates RMS (Root Mean Square) values, and feeds the detector.
-2.  **The Brain (Detector):** Learns baseline statistics during a "Calibration Phase" and then monitors deviations (Z-Scores) to trigger alarms.
-3.  **The Interface (Thread B):** An `Axum` web server that hosts the JSON API and the HTML5 Dashboard.
+## 📸 Screenshot
 
-## Quick Start
+```
+┌────────────────────────────────────────────────────────┐
+│  SILENT-EAR v1.0.0         [MONITORING] Health: 94%   │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│   B1 ████████████████████░░░░  0.142                  │
+│   B2 █████████████████████░░░  0.156                  │
+│   B3 ████████████████████░░░░  0.138                  │
+│   B4 ██████████████████████████████████  0.487  ⚠️    │
+│                                                        │
+│   Status: WARNING - Bearing 4 showing degradation     │
+│   Last Update: 2025-12-26 02:30:15                    │
+└────────────────────────────────────────────────────────┘
+```
 
-### Prerequisites
-- Rust (Cargo)
-- Modern Web Browser
+## 🚀 Quick Start
 
-### Running the Simulation
-To see the agent in action using the NASA IMS Bearing Dataset:
+### Option 1: Docker (Recommended)
 
 ```bash
+docker-compose up -d
+# Open http://localhost:3000
+```
+
+### Option 2: From Source
+
+```bash
+# Prerequisites: Rust 1.70+
+git clone https://github.com/mrsarac/silent-ear.git
+cd silent-ear
+
+# Download NASA IMS dataset (optional, for full simulation)
+# Place in data/ims/1st_test/1st_test/
+
+# Run simulation
 ./run.sh
+# or
+cargo run --release -- --simulate
 ```
 
-This script will:
-1.  Compile the project in release mode.
-2.  Start the agent with the `--simulate` flag.
-3.  The dashboard will be available at **http://localhost:3000**.
+## 🏗️ Architecture
 
-### Manual Build
-
-```bash
-cd projects/silent-ear
-cargo build --release
-./target/release/silent-ear --simulate
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Sensors   │───▶│ DSP Engine  │───▶│  Detector   │
+│ (Vibration) │    │ (RMS Calc)  │    │ (3σ Rule)   │
+└─────────────┘    └─────────────┘    └──────┬──────┘
+                                             │
+                                    ┌────────▼────────┐
+                                    │  Health Score   │
+                                    │   (0-100%)      │
+                                    └────────┬────────┘
+                                             │
+                   ┌─────────────────────────▼─────────────────────────┐
+                   │                 Web Interface                     │
+                   │  REST API (/api/status)  │  Dashboard (HTML5)    │
+                   └───────────────────────────────────────────────────┘
 ```
 
-## API Reference
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed documentation.
 
-**GET /api/status**
+## 📡 API Reference
 
-Returns the current system state in JSON format.
+### GET /api/status
+
+Returns current system state.
 
 ```json
 {
   "current_file": "2003.10.22.12.06.24",
-  "health_score": 0.98,
-  "status": "NORMAL",
-  "latest_readings": [0.12, 0.11, 0.13, ...],
+  "health_score": 0.94,
+  "status": "WARNING",
+  "latest_readings": [0.142, 0.156, 0.138, 0.487, ...],
   "is_training": false
 }
 ```
 
-## Dataset
+### POST /api/control
 
-This project uses the **NASA IMS Bearing Data (Set No. 2)**.
-- **Sensor 1:** Bearing 1 (Healthy)
-- **Sensor 2:** Bearing 2 (Healthy)
-- **Sensor 3:** Bearing 3 (Healthy)
-- **Sensor 4:** Bearing 4 (Fails at end of test)
+Control the simulation.
 
-## License
+```json
+{ "action": "start" }  // or "stop", "reset"
+```
 
-Internal Conatus Agent - MIT License.
+### POST /api/settings
+
+Configure detector parameters.
+
+```json
+{
+  "threshold": 3.0,
+  "train_limit": 500
+}
+```
+
+## 📊 Dataset
+
+This project uses the **NASA IMS Bearing Dataset** (Set No. 2):
+- 4 bearings monitored continuously until failure
+- 20,480 samples per reading at 20 kHz
+- Bearing 4 fails at end of test (outer race defect)
+
+[Download Dataset](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository)
+
+## 🧪 Testing
+
+```bash
+cargo test
+```
+
+```
+running 5 tests
+test detector::tests::test_new_detector ... ok
+test detector::tests::test_train_detector ... ok
+test detector::tests::test_anomaly_detection ... ok
+test detector::tests::test_health_score ... ok
+test detector::tests::test_set_threshold ... ok
+
+test result: ok. 5 passed; 0 failed
+```
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| Language | Rust 🦀 |
+| Async Runtime | Tokio |
+| Web Framework | Axum |
+| DSP | Native (RMS calculation) |
+| AI | Statistical Process Control |
+
+## 🗺️ Roadmap
+
+- [ ] MQTT integration (industrial IoT)
+- [ ] OPC-UA support (factory automation)
+- [ ] Prometheus metrics export
+- [ ] Raspberry Pi / ARM64 optimization
+- [ ] Real hardware sensor support (ADXL345)
+- [ ] Machine learning with Burn framework
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## 🏢 About
+
+Part of the **NeuraByte Labs** ecosystem — Building autonomous AI systems that interact with the physical world.
+
+---
+
+*Built with 🦀 Rust in Germany*

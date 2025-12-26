@@ -1,6 +1,26 @@
-data/
+# Build artifacts
+target/
+Cargo.lock
+
+# Data files (large datasets)
+data/ims/
 *.7z
 *.rar
+
+# Generated files
 *.csv
 *.log
-target/
+*.png
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep sample data
+!data/sample/

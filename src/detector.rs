@@ -81,8 +81,10 @@ impl AnomalyDetector {
         let mut max_z_score = 0.0;
 
         for (i, val) in sample.iter().enumerate() {
-            if self.std_dev[i] == 0.0 { continue; }
-            
+            if self.std_dev[i] == 0.0 {
+                continue;
+            }
+
             // Z-Score: How many standard deviations away is this value?
             let z = (val - self.mean[i]).abs() / self.std_dev[i];
             if z > max_z_score {
@@ -94,7 +96,7 @@ impl AnomalyDetector {
         // Z-Score <= Threshold (e.g., 3.0) -> 100% Health
         // Z-Score >= Fatal Limit (e.g., 10.0) -> 0% Health
         // In between -> Linear Drop
-        
+
         let threshold = self.threshold_multiplier;
         let fatal_limit = 15.0; // 15 StdDevs is massive, considered total failure
 
@@ -105,5 +107,73 @@ impl AnomalyDetector {
         } else {
             1.0 - ((max_z_score - threshold) / (fatal_limit - threshold))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_detector() {
+        let detector = AnomalyDetector::new(3.0);
+        assert_eq!(detector.threshold_multiplier, 3.0);
+        assert!(!detector.is_trained);
+        assert!(detector.mean.is_empty());
+    }
+
+    #[test]
+    fn test_train_detector() {
+        let mut detector = AnomalyDetector::new(3.0);
+        let data = vec![vec![1.0, 2.0], vec![1.0, 2.0], vec![1.0, 2.0]];
+        detector.train(&data);
+
+        assert!(detector.is_trained);
+        assert_eq!(detector.mean, vec![1.0, 2.0]);
+        assert_eq!(detector.std_dev, vec![0.0, 0.0]); // No variance
+    }
+
+    #[test]
+    fn test_anomaly_detection() {
+        let mut detector = AnomalyDetector::new(2.0);
+        let data = vec![
+            vec![10.0, 20.0],
+            vec![11.0, 21.0],
+            vec![9.0, 19.0],
+            vec![10.0, 20.0],
+        ];
+        detector.train(&data);
+
+        // Normal sample - within 2 std devs
+        let normal = vec![10.5, 20.5];
+        let result = detector.is_anomaly(&normal);
+        assert!(!result[0] && !result[1]);
+
+        // Anomalous sample - way outside normal range
+        let anomaly = vec![50.0, 20.0];
+        let result = detector.is_anomaly(&anomaly);
+        assert!(result[0]); // First value is anomaly
+    }
+
+    #[test]
+    fn test_health_score() {
+        let mut detector = AnomalyDetector::new(3.0);
+        let data = vec![vec![10.0], vec![10.0], vec![10.0], vec![11.0], vec![9.0]];
+        detector.train(&data);
+
+        // Perfect health - exactly at mean
+        let score = detector.calculate_health_score(&vec![10.0]);
+        assert_eq!(score, 1.0);
+
+        // Untrained detector returns 1.0
+        let untrained = AnomalyDetector::new(3.0);
+        assert_eq!(untrained.calculate_health_score(&vec![100.0]), 1.0);
+    }
+
+    #[test]
+    fn test_set_threshold() {
+        let mut detector = AnomalyDetector::new(3.0);
+        detector.set_threshold(5.0);
+        assert_eq!(detector.threshold_multiplier, 5.0);
     }
 }
