@@ -1,43 +1,34 @@
-# SILENT-EAR: Endüstriyel Kestirimci Bakım Projesi (Conatus Ajan #37)
+# SILENT-EAR: Strategic Vision & Market Analysis
 
-## 1. Stratejik Temel
-**Karar Tarihi:** 26 Aralık 2025
-**Statü:** ONAYLANDI (Conatus Strategy Board)
-**Niş:** Edge AI / Endüstriyel IoT
-**Teknoloji Çekirdeği:** Rust, Gömülü Sistemler, DSP (Dijital Sinyal İşleme)
+## 1. Amaç ve Hedef
+*   **Problem:** Endüstriyel makineler (motorlar, fanlar, bantlar) bozulmadan önce titreşim ve ses değişimleri gösterir. İnsanlar bunu duyamaz veya sürekli izleyemez. Arızalar plansız duruşlara ve milyonlarca dolar zarara yol açar.
+*   **Çözüm (Silent-Ear):** "Kestirimci Bakım" (Predictive Maintenance) yapan bir **Industrial Edge AI Ajanıdır**.
+    *   Veriyi buluta göndermeden yerinde (Edge) işler.
+    *   Makinenin "Sağlık Durumunu" (Health Score) hesaplar.
+    *   Anormallik (Anomaly) tespit ettiğinde operatörü uyarır.
+*   **Slogan:** "Fabrikanızın Duyu Organı."
 
-## 2. Yönetici Özeti
-Fabrika ortamlarındaki motor ve dönen ekipmanların (rulman, fan, pompa) ses ve titreşim verilerini yerel (on-device) olarak analiz eden, buluta bağımlı olmayan, Rust tabanlı bir yapay zeka ajanıdır. Amacı, plansız duruşları (downtime) önleyerek fabrikanın operasyonel "Conatus"unu korumaktır.
+## 2. Pazar Değeri ve İş Modeli
+*   **Pazar:** Predictive Maintenance pazarı devasadır ve hızla büyümektedir. Siemens/GE gibi devlerin çözümleri pahalı ve hantaldır.
+*   **Fırsat:** KOBİ'ler ve orta ölçekli fabrikalar için **hafif (Rust), taşınabilir, kurulumu kolay ve modern** bir çözüm büyük bir boşluğu doldurur.
+*   **Gelir Modeli:** 
+    *   **Kutu Ürün:** Yazılım + Donanım (Raspberry Pi + Sensör) paketi.
+    *   **SaaS:** Aylık izleme ve raporlama aboneliği.
 
-## 3. Yol Haritası (Roadmap)
+## 3. Kişisel ve Profesyonel Katkı (Mustafa Saraç)
+*   **Konumlandırma:** Sizi "Frontend/Backend Developer" seviyesinden **"Systems Architect"** veya **"IIoT Mühendisi"** seviyesine taşır.
+*   **Rust Yetkinliği:** Sektörde nadir bulunan "Rust ile gömülü sistem/AI geliştirme" yeteneğinizi kanıtlar.
+*   **Portföy Değeri:** Sadece bir web sitesi değil, çalışan, thread-safe, memory-safe ve endüstriyel bir sistem inşa ettiğinizi gösterir.
 
-### FAZ 1: Simülasyon ve Prototip (Hafta 1-2)
-- [ ] **Veri Temini:** NASA Bearing Dataset veya IMS Bearing Data'nın indirilmesi ve temizlenmesi.
-- [ ] **DSP Motoru (Rust):** Ham ses verisinden öznitelik çıkaran (FFT, RMS, Kurtosis) Rust kütüphanesinin yazılması.
-- [ ] **Model Eğitimi:** Basit bir Anomali Tespit modelinin (Isolation Forest veya Autoencoder) eğitilmesi.
-- [ ] **PC Demosu:** Laptop mikrofonu ile çalışan, basit bir fanın sesini analiz eden CLI uygulaması.
+## 4. NeuroLabs Vizyonuna Katkısı
+*   **Ekosistem:** NeuroLabs bir "Otonom Sistemler Laboratuvarı" ise, Silent-Ear bu sistemin **"Kulağıdır"**.
+*   **Gelecek:** 
+    *   **LLM (Beyin):** Karar mekanizması.
+    *   **Silent-Ear (Duyu):** Fiziksel dünyayı dinleyen ajan.
+    *   **Silent-Eye (Gelecek):** Kamera ile görsel kalite kontrol.
+*   Bu yapı, NeuroLabs'ı sadece yazılım üreten değil, fiziksel dünya ile entegre yapay zeka çözümleri üreten bir Ar-Ge merkezine dönüştürür.
 
-### FAZ 2: Gömülü Sistem Entegrasyonu (Hafta 3-6)
-- [ ] **Donanım Seçimi:** Raspberry Pi 4/5 veya NVIDIA Jetson Nano + Piezo sensörler.
-- [ ] **Cross-Compilation:** Rust kodunun ARM mimarisi için derlenmesi.
-- [ ] **Gerçek Zamanlı İşleme:** Veri akışını (stream) gecikmesiz işleyen asenkron (Tokio) yapının kurulması.
-
-### FAZ 3: Saha Testi ve Ürünleştirme (Ay 2+)
-- [ ] **Pilot Kurulum:** Dost bir atölye veya sanayi ortamında test.
-- [ ] **Dashboard:** Basit, yerel ağda çalışan bir web arayüzü (Rust/Actix veya Leptos).
-- [ ] **Kutu Tasarımı:** Endüstriyel koruma standartlarına uygun (IP67) kutu tasarımı (3D baskı prototip).
-
-## 4. Teknik Stack (Mustafa Saraç Core)
-- **Dil:** Rust (Kesinlikle. Python yok.)
-- **Matematik/DSP:** `ndarray`, `rustfft`
-- **ML/AI:** `burn` veya `linfa` (Rust-native ML)
-- **Runtime:** `Tokio` (Asenkron)
-- **Veri Tabanı:** `Sled` (Gömülü, pure Rust DB)
-
-## 5. Risk Analizi (The Critic)
-- **Donanım Gürültüsü:** Fabrika ortamı çok gürültülü. Arka plan sesini filtrelemek (Noise Cancellation) zor olabilir.
-- **Sensör Montajı:** Sensörün motora nasıl yapıştırılacağı kritik. Kötü montaj = Kötü veri.
-- **Maliyet:** Donanım maliyeti $100'ı geçerse pazar daralabilir.
-
----
-*Bu belge Conatus Strateji Kurulu tarafından oluşturulmuştur.*
+## 5. Yol Haritası (Next Steps)
+1.  **Marketing:** LinkedIn/X üzerinde teknik detayları (Rust, Tokio, Signal Processing) vurgulayarak paylaşım yapılması.
+2.  **Gerçekleme (Real-World Test):** Projenin simülasyondan çıkarılıp gerçek bir sensör (ivmeölçer) ve Raspberry Pi ile fiziksel bir makine üzerinde test edilmesi.
+3.  **Deployment:** Projenin Dockerize edilmesi ve "tak-çalıştır" hale getirilmesi.
