@@ -1,4 +1,3 @@
-use anyhow::Result;
 use axum::{
     routing::{get, post},
     Json, Router,
@@ -14,9 +13,16 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 use tower_http::services::ServeDir;
+use tracing::{debug, error, info, warn, Level};
+use tracing_subscriber::EnvFilter;
 
+mod config;
 mod detector;
+mod error;
+
+use config::AppConfig;
 use detector::AnomalyDetector;
+use error::{Result, SilentEarError};
 
 #[derive(Clone, Serialize, Deserialize)]
 struct SystemState {
@@ -25,17 +31,16 @@ struct SystemState {
     status: String,
     latest_readings: Vec<f64>,
     is_training: bool,
-    // Control flags
     is_running: bool,
     reset_requested: bool,
     threshold: f64,
     train_limit: usize,
-    system_logs: Vec<String>, // Stores last N logs
+    system_logs: Vec<String>,
 }
 
 #[derive(Deserialize)]
 struct ControlCommand {
-    action: String, // "start", "stop", "reset"
+    action: String,
 }
 
 #[derive(Deserialize)]
@@ -44,12 +49,57 @@ struct SettingsCommand {
     train_limit: usize,
 }
 
+fn init_tracing(config: &AppConfig) {
+    let level = match config.logging.level.to_lowercase().as_str() {
+        "trace" => Level::TRACE,
+        "debug" => Level::DEBUG,
+        "info" => Level::INFO,
+        "warn" => Level::WARN,
+        "error" => Level::ERROR,
+        _ => Level::INFO,
+    };
+
+    let filter = EnvFilter::from_default_env()
+        .add_directive(level.into());
+
+    if config.logging.json {
+        tracing_subscriber::fmt()
+            .with_env_filter(filter)
+            .json()
+            .init();
+    } else {
+        tracing_subscriber::fmt()
+            .with_env_filter(filter)
+            .with_target(true)
+            .with_thread_ids(false)
+            .init();
+    }
+}
+
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> anyhow::Result<()> {
+    // Load configuration
+    let config = AppConfig::load().unwrap_or_else(|e| {
+        eprintln!("Config warning: {}. Using defaults.", e);
+        AppConfig::default()
+    });
+
+    // Initialize tracing
+    init_tracing(&config);
+
+    info!(
+        version = env!("CARGO_PKG_VERSION"),
+        "Silent-Ear starting"
+    );
+
     let args: Vec<String> = env::args().collect();
     let simulate_mode = args.contains(&"--simulate".to_string());
 
-    // Shared State for API and Processing Loop
+    if simulate_mode {
+        info!("Running in simulation mode");
+    }
+
+    // Shared State
     let state = Arc::new(Mutex::new(SystemState {
         current_file: "Ready".to_string(),
         health_score: 1.0,
@@ -58,95 +108,130 @@ async fn main() -> Result<()> {
         is_training: true,
         is_running: false,
         reset_requested: false,
-        threshold: 3.0,
-        train_limit: 500,
+        threshold: config.detector.threshold,
+        train_limit: config.detector.train_limit,
         system_logs: vec![],
     }));
 
-    // Clone state for the API thread
     let api_state = state.clone();
+    let server_config = config.server.clone();
 
     // Spawn API Server
     tokio::spawn(async move {
-        // Serve static files from the "static" directory
-        let serve_dir = ServeDir::new("static");
-
-        let app = Router::new()
-            .route(
-                "/api/status",
-                get({
-                    let s = api_state.clone();
-                    move || async move {
-                        let data = s.lock().unwrap();
-                        Json(data.clone())
-                    }
-                }),
-            )
-            .route(
-                "/api/control",
-                post({
-                    let s = api_state.clone();
-                    move |Json(payload): Json<ControlCommand>| async move {
-                        let mut data = s.lock().unwrap();
-                        match payload.action.as_str() {
-                            "start" => {
-                                data.is_running = true;
-                                data.status = "STARTING".to_string();
-                                add_log(&mut data, "System started manually.");
-                            }
-                            "stop" => {
-                                data.is_running = false;
-                                data.status = "PAUSED".to_string();
-                                add_log(&mut data, "System paused manually.");
-                            }
-                            "reset" => {
-                                data.reset_requested = true;
-                                data.is_running = false;
-                                data.status = "RESETTING".to_string();
-                                add_log(&mut data, "System reset requested.");
-                            }
-                            _ => {}
-                        }
-                        Json("OK")
-                    }
-                }),
-            )
-            .route(
-                "/api/settings",
-                post({
-                    let s = api_state.clone();
-                    move |Json(payload): Json<SettingsCommand>| async move {
-                        let mut data = s.lock().unwrap();
-                        data.threshold = payload.threshold;
-                        data.train_limit = payload.train_limit;
-                        add_log(
-                            &mut data,
-                            &format!(
-                                "Settings updated: Threshold={}, TrainLimit={}",
-                                payload.threshold, payload.train_limit
-                            ),
-                        );
-                        Json("OK")
-                    }
-                }),
-            )
-            .nest_service("/", serve_dir); // Mount static file server at root
-
-        let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
-        println!("API Server running on http://localhost:3000");
-        let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-        axum::serve(listener, app).await.unwrap();
+        if let Err(e) = run_api_server(api_state, server_config).await {
+            error!(error = %e, "API server failed");
+        }
     });
 
-    // Run the main processing loop in a separate blocking task (since file I/O is blocking)
-    // We use tokio::task::spawn_blocking so we don't block the async runtime
+    // Run processing loop
     let process_state = state.clone();
+    let data_config = config.data.clone();
+
     tokio::task::spawn_blocking(move || {
-        if let Err(e) = run_processing_loop(process_state, simulate_mode) {
-            eprintln!("Processing Loop Error: {}", e);
+        if let Err(e) = run_processing_loop(process_state, simulate_mode, data_config) {
+            error!(error = %e, "Processing loop error");
         }
     })
     .await?;
+
+    Ok(())
+}
+
+async fn run_api_server(
+    state: Arc<Mutex<SystemState>>,
+    config: config::ServerConfig,
+) -> Result<()> {
+    let serve_dir = ServeDir::new("static");
+
+    let app = Router::new()
+        .route(
+            "/api/status",
+            get({
+                let s = state.clone();
+                move || async move {
+                    let data = s.lock().unwrap();
+                    Json(data.clone())
+                }
+            }),
+        )
+        .route(
+            "/api/control",
+            post({
+                let s = state.clone();
+                move |Json(payload): Json<ControlCommand>| async move {
+                    let mut data = s.lock().unwrap();
+                    match payload.action.as_str() {
+                        "start" => {
+                            info!("System started via API");
+                            data.is_running = true;
+                            data.status = "STARTING".to_string();
+                            add_log(&mut data, "System started manually.");
+                        }
+                        "stop" => {
+                            info!("System paused via API");
+                            data.is_running = false;
+                            data.status = "PAUSED".to_string();
+                            add_log(&mut data, "System paused manually.");
+                        }
+                        "reset" => {
+                            info!("System reset requested via API");
+                            data.reset_requested = true;
+                            data.is_running = false;
+                            data.status = "RESETTING".to_string();
+                            add_log(&mut data, "System reset requested.");
+                        }
+                        action => {
+                            warn!(action = %action, "Unknown control action");
+                        }
+                    }
+                    Json("OK")
+                }
+            }),
+        )
+        .route(
+            "/api/settings",
+            post({
+                let s = state.clone();
+                move |Json(payload): Json<SettingsCommand>| async move {
+                    let mut data = s.lock().unwrap();
+                    data.threshold = payload.threshold;
+                    data.train_limit = payload.train_limit;
+                    info!(
+                        threshold = payload.threshold,
+                        train_limit = payload.train_limit,
+                        "Settings updated"
+                    );
+                    add_log(
+                        &mut data,
+                        &format!(
+                            "Settings updated: Threshold={}, TrainLimit={}",
+                            payload.threshold, payload.train_limit
+                        ),
+                    );
+                    Json("OK")
+                }
+            }),
+        )
+        .nest_service("/", serve_dir);
+
+    let addr: SocketAddr = format!("{}:{}", config.host, config.port)
+        .parse()
+        .map_err(|_| SilentEarError::Config {
+            message: format!("Invalid address: {}:{}", config.host, config.port),
+        })?;
+
+    info!(address = %addr, "API server starting");
+
+    let listener = tokio::net::TcpListener::bind(addr)
+        .await
+        .map_err(|e| SilentEarError::ServerBind {
+            address: addr.to_string(),
+            source: e,
+        })?;
+
+    axum::serve(listener, app)
+        .await
+        .map_err(SilentEarError::Io)?;
 
     Ok(())
 }
@@ -160,12 +245,22 @@ fn add_log(state: &mut SystemState, msg: &str) {
     }
 }
 
-fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> Result<()> {
-    let data_dir = "data/ims/1st_test/1st_test";
-    let output_file = "bearing_rms_results.csv";
-    let alarm_file = "alarms.log";
+fn run_processing_loop(
+    state: Arc<Mutex<SystemState>>,
+    simulate_mode: bool,
+    config: config::DataConfig,
+) -> Result<()> {
+    let data_dir = &config.directory;
+    let output_file = &config.output_file;
+    let alarm_file = &config.alarm_file;
 
-    // Initial Setup
+    // Validate data directory
+    if !Path::new(data_dir).exists() {
+        return Err(SilentEarError::DataDirNotFound {
+            path: data_dir.to_string(),
+        });
+    }
+
     let mut files: Vec<PathBuf> = fs::read_dir(data_dir)?
         .filter_map(|entry| entry.ok())
         .map(|entry| entry.path())
@@ -173,53 +268,50 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
         .filter(|path| {
             path.file_name()
                 .and_then(|n| n.to_str())
-                .map(|s| !s.starts_with("."))
+                .map(|s| !s.starts_with('.'))
                 .unwrap_or(false)
         })
         .collect();
+
+    if files.is_empty() {
+        return Err(SilentEarError::NoDataFiles {
+            path: data_dir.to_string(),
+        });
+    }
+
     files.sort();
-
     let total_files = files.len();
-    let mut current_idx = 0;
+    info!(total_files = total_files, "Data files loaded");
 
-    // We'll init detector with defaults, but update it inside loop from state
+    let mut current_idx = 0;
     let mut detector = AnomalyDetector::new(3.0);
     let mut training_data: Vec<Vec<f64>> = Vec::new();
 
     // CSV Writer
     let mut wtr = Writer::from_path(output_file)?;
     let headers = [
-        "Timestamp",
-        "B1_X",
-        "B1_Y",
-        "B2_X",
-        "B2_Y",
-        "B3_X",
-        "B3_Y",
-        "B4_X",
-        "B4_Y",
+        "Timestamp", "B1_X", "B1_Y", "B2_X", "B2_Y",
+        "B3_X", "B3_Y", "B4_X", "B4_Y",
     ];
     wtr.write_record(headers)?;
     wtr.flush()?;
 
     loop {
-        // 1. Check Control State
         let (is_running, reset_req, threshold, train_limit) = {
             let s = state.lock().unwrap();
             (s.is_running, s.reset_requested, s.threshold, s.train_limit)
         };
 
         if reset_req {
-            println!("Resetting simulation...");
+            info!("Resetting simulation");
             current_idx = 0;
             training_data.clear();
             detector = AnomalyDetector::new(threshold);
 
-            // Reset state flags
             {
                 let mut s = state.lock().unwrap();
                 s.reset_requested = false;
-                s.is_running = false; // Stay paused after reset
+                s.is_running = false;
                 s.current_file = "Ready".to_string();
                 s.health_score = 1.0;
                 s.status = "IDLE".to_string();
@@ -236,7 +328,7 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
         }
 
         if current_idx >= total_files {
-            // End of simulation
+            info!("Simulation completed");
             {
                 let mut s = state.lock().unwrap();
                 s.is_running = false;
@@ -247,7 +339,6 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
             continue;
         }
 
-        // Update detector threshold dynamically
         detector.set_threshold(threshold);
 
         let file_path = &files[current_idx];
@@ -258,7 +349,6 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
 
         match calculate_rms(file_path) {
             Ok(rms_values) => {
-                // Write to CSV
                 let mut record = vec![filename.to_string()];
                 for val in &rms_values {
                     record.push(format!("{:.6}", val));
@@ -266,10 +356,9 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
                 wtr.write_record(&record)?;
                 wtr.flush()?;
 
-                // Logic Phase
                 if current_idx < train_limit {
-                    // TRAINING
                     training_data.push(rms_values.clone());
+                    debug!(file = %filename, idx = current_idx, "Training sample");
 
                     {
                         let mut s = state.lock().unwrap();
@@ -280,10 +369,10 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
                     }
 
                     if simulate_mode {
-                        print_live_status(filename, 1.0, &[], &[], true);
+                        print_live_status(filename, 1.0, true);
                     }
                 } else if current_idx == train_limit {
-                    // TRANSITION TO INFERENCE
+                    info!(samples = training_data.len(), "Training complete");
                     detector.train(&training_data);
                     training_data.clear();
 
@@ -302,7 +391,6 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
                         &state,
                     )?;
                 } else {
-                    // INFERENCE
                     process_inference(
                         &detector,
                         &rms_values,
@@ -316,14 +404,13 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
 
                 current_idx += 1;
 
-                // Simulation Delay
                 if simulate_mode {
                     thread::sleep(Duration::from_millis(100));
                 }
             }
             Err(e) => {
-                eprintln!("Error processing {:?}: {}", file_path, e);
-                current_idx += 1; // Skip bad file
+                warn!(file = %filename, error = %e, "Error processing file, skipping");
+                current_idx += 1;
             }
         }
     }
@@ -350,7 +437,6 @@ fn process_inference(
         "CRITICAL"
     };
 
-    // Update Global State
     {
         let mut s = state.lock().unwrap();
         s.current_file = timestamp.to_string();
@@ -361,16 +447,21 @@ fn process_inference(
 
         if is_critical {
             let msg = format!("CRITICAL: Health {:.1}%", health_score * 100.0);
-            // Avoid spamming logs every millisecond, check if last log is same? (Skipped for simplicity)
             add_log(&mut s, &msg);
         }
     }
 
     if simulate_mode {
-        print_live_status(timestamp, health_score, sample, &anomalies, false);
+        print_live_status(timestamp, health_score, false);
     }
 
     if is_critical {
+        warn!(
+            timestamp = %timestamp,
+            health = health_score * 100.0,
+            "Critical anomaly detected"
+        );
+
         let mut msg = format!(
             "[CRITICAL ALARM] Timestamp: {} -> Health: {:.1}% -> ",
             timestamp,
@@ -396,26 +487,20 @@ fn process_inference(
     Ok(())
 }
 
-fn print_live_status(
-    timestamp: &str,
-    health: f64,
-    _sample: &[f64],
-    _anomalies: &[bool],
-    training: bool,
-) {
+fn print_live_status(timestamp: &str, health: f64, training: bool) {
     let bar_len = 20;
     let filled = (health * bar_len as f64).round() as usize;
     let empty = bar_len - filled;
     let bar = format!("{}{}", "█".repeat(filled), "░".repeat(empty));
 
     let status = if training {
-        "TRAINING".to_string()
+        "TRAINING"
     } else if health > 0.9 {
-        "NORMAL  ".to_string()
+        "NORMAL  "
     } else if health > 0.5 {
-        "WARNING ".to_string()
+        "WARNING "
     } else {
-        "CRITICAL".to_string()
+        "CRITICAL"
     };
 
     let color = if training {
@@ -427,6 +512,7 @@ fn print_live_status(
     } else {
         "\x1b[31m"
     };
+
     print!(
         "\r{} [{}] {}% | {} | {}",
         color,
@@ -440,7 +526,10 @@ fn print_live_status(
 }
 
 fn calculate_rms<P: AsRef<Path>>(path: P) -> Result<Vec<f64>> {
-    let file = File::open(path)?;
+    let file = File::open(&path).map_err(|e| SilentEarError::DataFileRead {
+        path: path.as_ref().display().to_string(),
+        source: e,
+    })?;
     let buf_reader = BufReader::new(file);
 
     let mut rdr = ReaderBuilder::new()
@@ -452,8 +541,12 @@ fn calculate_rms<P: AsRef<Path>>(path: P) -> Result<Vec<f64>> {
     let mut sum_squares = [0.0; 8];
     let mut count = 0;
 
-    for result in rdr.records() {
-        let record = result?;
+    for (line_num, result) in rdr.records().enumerate() {
+        let record = result.map_err(|e| SilentEarError::CsvParse {
+            line: line_num + 1,
+            source: e,
+        })?;
+
         for i in 0..8 {
             if let Some(field) = record.get(i) {
                 if let Ok(val) = field.trim().parse::<f64>() {

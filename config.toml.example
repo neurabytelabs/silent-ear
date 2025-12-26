@@ -1,0 +1,30 @@
+# Silent-Ear Configuration Example
+# Copy this file to config.toml and modify as needed
+
+[server]
+host = "0.0.0.0"
+port = 3000
+
+[detector]
+# Standard deviations threshold for anomaly detection
+threshold = 3.0
+# Number of samples for training phase
+train_limit = 500
+# Z-score limit for 0% health (fatal)
+fatal_limit = 15.0
+
+[data]
+# Path to sensor data directory
+directory = "data/ims/1st_test/1st_test"
+# Output CSV file for RMS results
+output_file = "bearing_rms_results.csv"
+# Alarm log file
+alarm_file = "alarms.log"
+
+[logging]
+# Log level: trace, debug, info, warn, error
+level = "info"
+# Output logs as JSON (useful for log aggregation)
+json = false
+# Optional log file path (in addition to stdout)
+# file = "silent-ear.log"

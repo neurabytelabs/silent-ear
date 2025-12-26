@@ -2,6 +2,9 @@
 target/
 Cargo.lock
 
+# Local config (use config.toml.example as template)
+config.toml
+
 # Data files (large datasets)
 data/ims/
 *.7z
