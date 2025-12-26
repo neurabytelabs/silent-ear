@@ -20,7 +20,9 @@ data/ims/
 
 # OS
 .DS_Store
+**/.DS_Store
 Thumbs.db
+*.swp
 
 # Keep sample data
 !data/sample/
