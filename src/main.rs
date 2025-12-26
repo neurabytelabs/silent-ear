@@ -547,10 +547,10 @@ fn calculate_rms<P: AsRef<Path>>(path: P) -> Result<Vec<f64>> {
             source: e,
         })?;
 
-        for i in 0..8 {
+        for (i, sum) in sum_squares.iter_mut().enumerate() {
             if let Some(field) = record.get(i) {
                 if let Ok(val) = field.trim().parse::<f64>() {
-                    sum_squares[i] += val * val;
+                    *sum += val * val;
                 }
             }
         }

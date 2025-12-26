@@ -33,9 +33,13 @@ pub enum SilentEarError {
         source: std::io::Error,
     },
 
+    /// Reserved for future detector validation
+    #[allow(dead_code)]
     #[error("Detector not trained - cannot perform inference")]
     DetectorNotTrained,
 
+    /// Reserved for future threshold validation
+    #[allow(dead_code)]
     #[error("Invalid threshold value: {value} (must be > 0)")]
     InvalidThreshold { value: f64 },
 

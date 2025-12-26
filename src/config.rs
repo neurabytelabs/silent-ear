@@ -37,6 +37,8 @@ pub struct DetectorConfig {
     #[serde(default = "default_train_limit")]
     pub train_limit: usize,
 
+    /// Z-score limit for 0% health (reserved for future use)
+    #[allow(dead_code)]
     #[serde(default = "default_fatal_limit")]
     pub fatal_limit: f64,
 }
@@ -61,6 +63,8 @@ pub struct LoggingConfig {
     #[serde(default)]
     pub json: bool,
 
+    /// Optional log file path (reserved for future use)
+    #[allow(dead_code)]
     #[serde(default = "default_log_file")]
     pub file: Option<String>,
 }
