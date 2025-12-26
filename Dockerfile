@@ -34,6 +34,7 @@ WORKDIR /app
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
     ca-certificates \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy binary from builder
@@ -42,11 +43,8 @@ COPY --from=builder /app/target/release/silent-ear /app/silent-ear
 # Copy static files
 COPY --from=builder /app/static /app/static
 
-# Create data directory for sample data
-RUN mkdir -p /app/data/sample
-
-# Copy sample data (if exists)
-COPY data/sample* /app/data/sample/ 2>/dev/null || true
+# Create data directory (mount your data here)
+RUN mkdir -p /app/data
 
 # Expose web server port
 EXPOSE 3000
