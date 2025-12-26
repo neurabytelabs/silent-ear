@@ -1,8 +1,8 @@
 # 🔊 Silent-Ear
 
-[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![CI](https://github.com/mrsarac/silent-ear/actions/workflows/ci.yml/badge.svg)](https://github.com/mrsarac/silent-ear/actions/workflows/ci.yml)
+[![Rust](https://img.shields.io/badge/rust-1.83%2B-orange.svg)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-5%20passing-brightgreen.svg)]()
 
 **Industrial Edge AI Anomaly Detection System for Predictive Maintenance**
 
@@ -122,14 +122,14 @@ cargo test
 ```
 
 ```
-running 5 tests
+running 23 tests
 test detector::tests::test_new_detector ... ok
 test detector::tests::test_train_detector ... ok
 test detector::tests::test_anomaly_detection ... ok
 test detector::tests::test_health_score ... ok
-test detector::tests::test_set_threshold ... ok
+... (21 more tests)
 
-test result: ok. 5 passed; 0 failed
+test result: ok. 23 passed; 0 failed
 ```
 
 ## 🛠️ Tech Stack
