@@ -3,163 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Silent-Ear | Industrial Monitor</title>
+    <title>Silent-Ear | Conatus Agent #37</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Courier New', Courier, monospace; }
-        .monitor-panel { background: #1e293b; border: 1px solid #334155; border-radius: 4px; }
-        .blinking { animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
+        :root {
+            --primary: #00f2ff;
+            --secondary: #004d40;
+            --danger: #ff2a6d;
+            --warning: #ffbd00;
+            --bg-dark: #050b14;
+            --panel-bg: rgba(10, 20, 30, 0.85);
+            --border-color: #1a3c5a;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e0f2f1;
+            font-family: 'JetBrains Mono', monospace;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+
+        .glass-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 4px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+        
+        .glow-text { text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        .glow-danger { text-shadow: 0 0 10px rgba(255, 42, 109, 0.5); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020408; }
+        ::-webkit-scrollbar-thumb { background: #1a3c5a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .btn-control {
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        .btn-control:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 242, 255, 0.2); }
+        .btn-control:active { transform: translateY(0); }
+
+        .log-entry {
+            border-bottom: 1px solid #112233;
+            padding: 4px 0;
+            font-size: 0.85rem;
+        }
     </style>
 </head>
-<body class="h-screen flex flex-col p-4">
+<body class="min-h-screen p-4 md:p-8 flex flex-col gap-6">
+
     <!-- Header -->
-    <header class="flex justify-between items-center mb-6 border-b border-gray-700 pb-2">
+    <header class="flex justify-between items-center glass-panel p-6">
         <div>
-            <h1 class="text-3xl font-bold text-blue-400 tracking-wider">SILENT-EAR</h1>
-            <p class="text-xs text-gray-500">CONATUS AGENT #37 // INDUSTRIAL ANOMALY DETECTOR</p>
+            <h1 class="text-3xl font-black font-orbitron tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary)] to-blue-500 glow-text">SILENT-EAR</h1>
+            <p class="text-xs text-cyan-700 tracking-[0.2em] mt-1">INDUSTRIAL AGENT #37 | CONATUS SYSTEMS</p>
         </div>
-        <div class="text-right">
-            <p id="timestamp" class="text-sm text-yellow-500">WAITING FOR DATA...</p>
-            <p id="file-id" class="text-xs text-gray-600">FILE: ---</p>
+        <div class="flex items-center gap-6">
+            <button onclick="toggleModal('specs-modal')" class="text-[var(--primary)] hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+            <div class="text-right">
+                <div class="text-xs text-gray-400 mb-1">SYSTEM STATUS</div>
+                <div id="system-status" class="text-xl font-bold text-[var(--primary)] glow-text">OFFLINE</div>
+            </div>
+            <div id="status-dot" class="status-indicator bg-gray-600"></div>
         </div>
     </header>
 
-    <!-- Main Grid -->
-    <div class="grid grid-cols-12 gap-4 flex-grow">
-        
-        <!-- Left Column: Status & Health -->
-        <div class="col-span-12 md:col-span-4 flex flex-col gap-4">
+    <!-- Specs Modal -->
+    <div id="specs-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-panel p-8 max-w-2xl w-full mx-4 relative transform scale-95 transition-transform duration-300" id="modal-content">
+            <button onclick="toggleModal('specs-modal')" class="absolute top-4 right-4 text-gray-500 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
             
-            <!-- Health Score Card -->
-            <div class="monitor-panel p-6 flex flex-col items-center justify-center flex-grow">
-                <h2 class="text-gray-400 mb-2 uppercase tracking-widest text-sm">System Health</h2>
-                <div class="relative w-48 h-48 flex items-center justify-center rounded-full border-8 border-gray-700" id="health-ring">
-                    <span id="health-value" class="text-5xl font-bold text-white">---</span>
-                    <span class="absolute bottom-10 text-xs text-gray-500">%</span>
+            <h2 class="text-2xl font-orbitron text-[var(--primary)] mb-6 border-b border-[#1a3c5a] pb-2">SYSTEM SPECIFICATIONS</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 font-mono text-sm text-gray-300">
+                <div>
+                    <h3 class="text-white font-bold mb-2 uppercase tracking-wider text-xs">/// AGENT IDENTITY</h3>
+                    <ul class="space-y-2 mb-6">
+                        <li><span class="text-gray-500">ID:</span> CONATUS-37 "SILENT-EAR"</li>
+                        <li><span class="text-gray-500">TYPE:</span> EDGE AI ANALYZER</li>
+                        <li><span class="text-gray-500">CORE:</span> RUST / AXUM / TOKIO</li>
+                        <li><span class="text-gray-500">BUILD:</span> v1.0.2-STABLE</li>
+                    </ul>
+
+                    <h3 class="text-white font-bold mb-2 uppercase tracking-wider text-xs">/// DETECTION LOGIC</h3>
+                    <p class="mb-2 text-xs leading-relaxed">
+                        Uses a <span class="text-[var(--primary)]">Statistical Anomaly Detector</span> based on adaptive Gaussian distribution.
+                    </p>
+                    <ul class="space-y-1 text-xs list-disc list-inside text-gray-400">
+                        <li>Calculating RMS (Root Mean Square) for 8 vibration channels.</li>
+                        <li>Learning baseline behavior during TRAINING phase.</li>
+                        <li>Flagging deviations > N-Sigma (Default: 3.0σ).</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-bold mb-2 uppercase tracking-wider text-xs">/// OPERATOR MANUAL</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded bg-[#004d40] flex items-center justify-center text-[var(--primary)] text-xs font-bold">1</div>
+                            <div>
+                                <div class="text-white text-xs font-bold">INITIALIZATION</div>
+                                <div class="text-[10px] text-gray-400">Press 'START' to begin raw data ingestion. The system will auto-calibrate.</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded bg-[#0d47a1] flex items-center justify-center text-blue-200 text-xs font-bold">2</div>
+                            <div>
+                                <div class="text-white text-xs font-bold">TRAINING PHASE</div>
+                                <div class="text-[10px] text-gray-400">First N samples are used to build the normal operating profile. No alarms are triggered here.</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded bg-[#b71c1c] flex items-center justify-center text-white text-xs font-bold">3</div>
+                            <div>
+                                <div class="text-white text-xs font-bold">MONITORING</div>
+                                <div class="text-[10px] text-gray-400">System switches to inference. Health score drops if RMS values exceed the dynamic threshold.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Status Indicator -->
-            <div class="monitor-panel p-6 text-center">
-                <h2 class="text-gray-400 mb-2 uppercase tracking-widest text-sm">Operational Status</h2>
-                <div id="status-box" class="py-4 px-8 bg-gray-800 rounded text-xl font-bold border border-gray-600">
-                    INITIALIZING
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Live Charts -->
-        <div class="col-span-12 md:col-span-8 flex flex-col gap-4">
-            <div class="monitor-panel p-4 flex-grow relative">
-                <h2 class="text-gray-400 mb-2 uppercase tracking-widest text-sm">Vibration Signature (RMS)</h2>
-                <canvas id="vibrationChart"></canvas>
-            </div>
-            
-            <!-- Sensor Values Grid -->
-            <div class="grid grid-cols-4 gap-2 text-center text-xs">
-                <div class="monitor-panel p-2"><span class="text-gray-500">B1_X</span><br><span id="val-0" class="text-blue-300 font-bold">---</span></div>
-                <div class="monitor-panel p-2"><span class="text-gray-500">B1_Y</span><br><span id="val-1" class="text-blue-300 font-bold">---</span></div>
-                <div class="monitor-panel p-2"><span class="text-gray-500">B2_X</span><br><span id="val-2" class="text-blue-300 font-bold">---</span></div>
-                <div class="monitor-panel p-2"><span class="text-gray-500">B2_Y</span><br><span id="val-3" class="text-blue-300 font-bold">---</span></div>
-                <div class="monitor-panel p-2"><span class="text-gray-500">B3_X</span><br><span id="val-4" class="text-blue-300 font-bold">---</span></div>
-                <div class="monitor-panel p-2"><span class="text-gray-500">B3_Y</span><br><span id="val-5" class="text-blue-300 font-bold">---</span></div>
-                <div class="monitor-panel p-2"><span class="text-gray-500">B4_X</span><br><span id="val-6" class="text-blue-300 font-bold">---</span></div>
-                <div class="monitor-panel p-2"><span class="text-gray-500">B4_Y</span><br><span id="val-7" class="text-blue-300 font-bold">---</span></div>
+            <div class="mt-8 pt-4 border-t border-[#1a3c5a] text-center">
+                <p class="text-[10px] text-gray-600 tracking-[0.3em]">DESIGNED BY MUSTAFA SARAC CORE SYSTEMS</p>
             </div>
         </div>
     </div>
 
+    <!-- Main Grid -->
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-grow">
+        
+        <!-- Left Column: Controls & Settings -->
+        <aside class="lg:col-span-1 space-y-6">
+            
+            <!-- Control Panel -->
+            <div class="glass-panel p-6">
+                <h2 class="text-lg font-orbitron text-[var(--primary)] border-b border-[#1a3c5a] pb-2 mb-4">OPERATION CONTROL</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="control('start')" class="btn-control bg-[#004d40] text-[#00f2ff] hover:bg-[#00695c] py-3 col-span-1">START</button>
+                    <button onclick="control('stop')" class="btn-control bg-[#37474f] text-gray-300 hover:bg-[#455a64] py-3 col-span-1">PAUSE</button>
+                    <button onclick="control('reset')" class="btn-control bg-[#b71c1c] text-white hover:bg-[#d32f2f] py-3 col-span-2">EMERGENCY RESET</button>
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="glass-panel p-6">
+                <h2 class="text-lg font-orbitron text-[var(--warning)] border-b border-[#1a3c5a] pb-2 mb-4">PARAMETERS</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">ANOMALY THRESHOLD (σ)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="range" id="threshold-slider" min="1.0" max="10.0" step="0.1" value="3.0" class="flex-grow accent-[var(--primary)] bg-gray-800 h-2 rounded-lg appearance-none cursor-pointer">
+                            <span id="threshold-value" class="w-12 text-right font-mono text-[var(--primary)]">3.0</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">TRAINING DATASET LIMIT</label>
+                        <input type="number" id="train-limit" value="500" class="w-full bg-[#0a141e] border border-[#1a3c5a] text-gray-300 px-3 py-2 rounded focus:border-[var(--primary)] focus:outline-none font-mono">
+                    </div>
+                    <button onclick="updateSettings()" class="w-full btn-control bg-[#0d47a1] text-blue-100 hover:bg-[#1565c0] py-2 mt-2 text-sm">APPLY SETTINGS</button>
+                </div>
+            </div>
+
+            <!-- Health Metric -->
+            <div class="glass-panel p-6 flex flex-col items-center justify-center text-center">
+                <div class="text-sm text-gray-400 mb-2 font-orbitron">BEARING HEALTH INTEGRITY</div>
+                <div class="relative w-40 h-40 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="80" cy="80" r="70" stroke="#1a3c5a" stroke-width="10" fill="none"></circle>
+                        <circle id="health-circle" cx="80" cy="80" r="70" stroke="var(--primary)" stroke-width="10" fill="none" stroke-dasharray="440" stroke-dashoffset="0" class="transition-all duration-500"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span id="health-value" class="text-4xl font-bold font-orbitron glow-text">100%</span>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Center: Visualization -->
+        <section class="lg:col-span-2 flex flex-col gap-6">
+            <!-- Chart Container -->
+            <div class="glass-panel p-4 flex-grow relative overflow-hidden flex flex-col">
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <h2 class="text-sm font-orbitron text-gray-400">REAL-TIME VIBRATION SENSORS (RMS)</h2>
+                    <span id="current-file" class="text-xs font-mono text-[var(--primary)] bg-[#004d40] px-2 py-1 rounded">FILE: WAITING...</span>
+                </div>
+                <div class="flex-grow relative w-full h-full min-h-[400px]">
+                     <canvas id="sensorChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Sensor Grid (Instant Values) -->
+            <div class="grid grid-cols-4 gap-4">
+                 <!-- Generated by JS -->
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 1 (X)</div>
+                     <div id="val-0" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 1 (Y)</div>
+                     <div id="val-1" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 2 (X)</div>
+                     <div id="val-2" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 2 (Y)</div>
+                     <div id="val-3" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 3 (X)</div>
+                     <div id="val-4" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 3 (Y)</div>
+                     <div id="val-5" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 4 (X)</div>
+                     <div id="val-6" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+                 <div class="glass-panel p-3 text-center">
+                     <div class="text-[10px] text-gray-500">BEARING 4 (Y)</div>
+                     <div id="val-7" class="text-lg font-mono text-[var(--primary)]">0.000</div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Logs -->
+        <aside class="lg:col-span-1 glass-panel flex flex-col h-[800px] lg:h-auto">
+            <div class="p-4 border-b border-[#1a3c5a] flex justify-between items-center bg-[#0a141e]">
+                <h2 class="text-sm font-orbitron text-gray-300">SYSTEM LOGS</h2>
+                <div class="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse"></div>
+            </div>
+            <div id="log-container" class="flex-grow overflow-y-auto p-4 font-mono text-xs space-y-1">
+                <div class="text-gray-500 italic">Waiting for system initialization...</div>
+            </div>
+        </aside>
+
+    </main>
+
     <script>
-        // Chart Setup
-        const ctx = document.getElementById('vibrationChart').getContext('2d');
+        // --- Chart Setup ---
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const maxDataPoints = 50;
+        
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: Array(50).fill(''),
+                labels: Array(maxDataPoints).fill(''),
                 datasets: [
-                    { label: 'B4_X (Critical)', data: Array(50).fill(0), borderColor: '#ef4444', borderWidth: 2, tension: 0.4, pointRadius: 0 },
-                    { label: 'B4_Y (Critical)', data: Array(50).fill(0), borderColor: '#f97316', borderWidth: 2, tension: 0.4, pointRadius: 0 },
-                    { label: 'B1_X (Ref)', data: Array(50).fill(0), borderColor: '#3b82f6', borderWidth: 1, tension: 0.4, pointRadius: 0 }
+                    { label: 'B1_X', data: Array(maxDataPoints).fill(null), borderColor: '#00f2ff', borderWidth: 1, tension: 0.3 },
+                    { label: 'B1_Y', data: Array(maxDataPoints).fill(null), borderColor: '#0097a7', borderWidth: 1, tension: 0.3 },
+                    { label: 'B2_X', data: Array(maxDataPoints).fill(null), borderColor: '#ffbd00', borderWidth: 1, tension: 0.3 },
+                    { label: 'B2_Y', data: Array(maxDataPoints).fill(null), borderColor: '#ff6f00', borderWidth: 1, tension: 0.3 },
+                    { label: 'B3_X', data: Array(maxDataPoints).fill(null), borderColor: '#d500f9', borderWidth: 1, tension: 0.3 },
+                    { label: 'B3_Y', data: Array(maxDataPoints).fill(null), borderColor: '#7b1fa2', borderWidth: 1, tension: 0.3 },
+                    { label: 'B4_X', data: Array(maxDataPoints).fill(null), borderColor: '#ff2a6d', borderWidth: 1, tension: 0.3 },
+                    { label: 'B4_Y', data: Array(maxDataPoints).fill(null), borderColor: '#c62828', borderWidth: 1, tension: 0.3 },
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 animation: false,
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                    x: { grid: { display: false } }
-                },
-                plugins: { legend: { labels: { color: '#94a3b8' } } }
+                    x: { display: false },
+                    y: { 
+                        grid: { color: '#1a3c5a' },
+                        ticks: { color: '#607d8b', font: { family: 'JetBrains Mono' } }
+                    }
+                }
             }
         });
 
-        const statusBox = document.getElementById('status-box');
-        const healthValue = document.getElementById('health-value');
-        const healthRing = document.getElementById('health-ring');
-        const timestampEl = document.getElementById('timestamp');
-        const fileIdEl = document.getElementById('file-id');
+        // --- State ---
+        let lastLogCount = 0;
 
-        async function fetchData() {
-            try {
-                const res = await fetch('/api/status');
-                const data = await res.json();
-
-                // Update Text
-                timestampEl.innerText = data.current_file; // Using current_file as timestamp
-                fileIdEl.innerText = `MODE: ${data.is_training ? 'TRAINING' : 'INFERENCE'}`;
-                
-                // Update Health
-                const healthPct = (data.health_score * 100).toFixed(1);
-                healthValue.innerText = healthPct;
-                
-                // Color Logic
-                let colorClass = 'text-green-500 border-green-500';
-                let statusColor = 'bg-green-900 text-green-200';
-                
-                if (data.status === 'WARNING') {
-                    colorClass = 'text-yellow-500 border-yellow-500';
-                    statusColor = 'bg-yellow-900 text-yellow-200';
-                } else if (data.status === 'CRITICAL') {
-                    colorClass = 'text-red-500 border-red-500';
-                    statusColor = 'bg-red-900 text-red-200 blinking';
-                } else if (data.status === 'TRAINING') {
-                    colorClass = 'text-blue-500 border-blue-500';
-                    statusColor = 'bg-blue-900 text-blue-200';
-                }
-
-                healthRing.className = `relative w-48 h-48 flex items-center justify-center rounded-full border-8 ${colorClass.split(' ')[1]}`; // just border color
-                healthValue.className = `text-5xl font-bold ${colorClass.split(' ')[0]}`;
-                statusBox.className = `py-4 px-8 rounded text-xl font-bold border border-gray-600 ${statusColor}`;
-                statusBox.innerText = data.status;
-
-                // Update Sensor Grid
-                if (data.latest_readings.length === 8) {
-                    for(let i=0; i<8; i++) {
-                        document.getElementById(`val-${i}`).innerText = data.latest_readings[i].toFixed(4);
-                    }
-
-                    // Update Chart (Shift Buffer)
-                    chart.data.datasets[0].data.shift();
-                    chart.data.datasets[0].data.push(data.latest_readings[6]); // B4_X
-                    
-                    chart.data.datasets[1].data.shift();
-                    chart.data.datasets[1].data.push(data.latest_readings[7]); // B4_Y
-                    
-                    chart.data.datasets[2].data.shift();
-                    chart.data.datasets[2].data.push(data.latest_readings[0]); // B1_X
-                    
-                    chart.update();
-                }
-
-            } catch (err) {
-                console.error("Connection lost", err);
+        // --- Controls ---
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById('modal-content');
+            
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    content.classList.remove('scale-95');
+                    content.classList.add('scale-100');
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
             }
         }
 
-        setInterval(fetchData, 100);
+        async function control(action) {
+            try {
+                const res = await fetch('/api/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                if(!res.ok) console.error("Control failed");
+            } catch(e) { console.error(e); }
+        }
+
+        async function updateSettings() {
+            const threshold = parseFloat(document.getElementById('threshold-slider').value);
+            const trainLimit = parseInt(document.getElementById('train-limit').value);
+            
+            try {
+                await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ threshold, train_limit: trainLimit })
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        // --- UI Updates ---
+        document.getElementById('threshold-slider').addEventListener('input', (e) => {
+            document.getElementById('threshold-value').innerText = e.target.value;
+        });
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                // 1. Update Header Status
+                const statusEl = document.getElementById('system-status');
+                const dotEl = document.getElementById('status-dot');
+                statusEl.innerText = data.status;
+                
+                if (data.status === 'NORMAL') {
+                    statusEl.className = 'text-xl font-bold text-[#00f2ff] glow-text';
+                    dotEl.className = 'status-indicator bg-[#00f2ff]';
+                } else if (data.status === 'WARNING') {
+                    statusEl.className = 'text-xl font-bold text-[#ffbd00] glow-text';
+                    dotEl.className = 'status-indicator bg-[#ffbd00]';
+                } else if (data.status === 'CRITICAL') {
+                    statusEl.className = 'text-xl font-bold text-[#ff2a6d] glow-danger';
+                    dotEl.className = 'status-indicator bg-[#ff2a6d]';
+                } else if (data.status === 'TRAINING') {
+                     statusEl.className = 'text-xl font-bold text-blue-400 glow-text';
+                     dotEl.className = 'status-indicator bg-blue-400 animate-pulse';
+                } else {
+                    statusEl.className = 'text-xl font-bold text-gray-400';
+                    dotEl.className = 'status-indicator bg-gray-400';
+                }
+
+                // 2. Update File Info
+                document.getElementById('current-file').innerText = `FILE: ${data.current_file}`;
+
+                // 3. Update Health Circle
+                const healthPct = Math.round(data.health_score * 100);
+                document.getElementById('health-value').innerText = `${healthPct}%`;
+                
+                // SVG Circle Logic: 2 * PI * R (70) ≈ 440
+                const offset = 440 - (440 * data.health_score);
+                const circle = document.getElementById('health-circle');
+                circle.style.strokeDashoffset = offset;
+                circle.style.stroke = data.health_score > 0.9 ? '#00f2ff' : (data.health_score > 0.5 ? '#ffbd00' : '#ff2a6d');
+
+                // 4. Update Readings Grid
+                if (data.latest_readings && data.latest_readings.length === 8) {
+                    data.latest_readings.forEach((val, idx) => {
+                         const el = document.getElementById(`val-${idx}`);
+                         el.innerText = val.toFixed(4);
+                         // Simple highlight if value is high (naive check for visual flair)
+                         el.style.color = val > 0.15 ? '#ff2a6d' : 'var(--primary)';
+                    });
+
+                    // 5. Update Chart
+                    if (data.is_running || data.status === 'TRAINING') {
+                        chart.data.datasets.forEach((dataset, i) => {
+                            dataset.data.push(data.latest_readings[i]);
+                            if (dataset.data.length > maxDataPoints) dataset.data.shift();
+                        });
+                        chart.update('none'); // 'none' for performance
+                    }
+                }
+
+                // 6. Update Logs
+                if (data.system_logs && data.system_logs.length > 0) {
+                     // Check if new logs exist by comparing length or content hash (simplified here)
+                     const container = document.getElementById('log-container');
+                     
+                     // Naive rebuild for simplicity (in prod, append only new)
+                     if (JSON.stringify(data.system_logs) !== JSON.stringify(window.lastLogs)) {
+                        container.innerHTML = data.system_logs.map(log => {
+                            let colorClass = "text-gray-300";
+                            if(log.includes("CRITICAL")) colorClass = "text-[#ff2a6d]";
+                            if(log.includes("WARNING")) colorClass = "text-[#ffbd00]";
+                            if(log.includes("Training")) colorClass = "text-blue-300";
+                            return `<div class="log-entry ${colorClass}">${log}</div>`;
+                        }).join('');
+                        window.lastLogs = data.system_logs;
+                     }
+                }
+
+                // Sync Inputs if first load (optional, skipped for now to avoid overwriting user edits)
+
+            } catch (err) {
+                console.error("Status fetch error", err);
+            }
+        }
+
+        // Loop
+        setInterval(fetchStatus, 500); // 2Hz refresh
     </script>
 </body>
 </html>

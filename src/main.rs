@@ -8,24 +8,41 @@ use std::thread;
 use std::time::Duration;
 use std::sync::{Arc, Mutex};
 use axum::{
-    routing::get,
+    routing::{get, post},
     Router,
     Json,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use tower_http::services::ServeDir;
 
 mod detector;
 use detector::AnomalyDetector;
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 struct SystemState {
     current_file: String,
     health_score: f64,
     status: String,
     latest_readings: Vec<f64>,
     is_training: bool,
+    // Control flags
+    is_running: bool,
+    reset_requested: bool,
+    threshold: f64,
+    train_limit: usize,
+    system_logs: Vec<String>, // Stores last N logs
+}
+
+#[derive(Deserialize)]
+struct ControlCommand {
+    action: String, // "start", "stop", "reset"
+}
+
+#[derive(Deserialize)]
+struct SettingsCommand {
+    threshold: f64,
+    train_limit: usize,
 }
 
 #[tokio::main]
@@ -35,11 +52,16 @@ async fn main() -> Result<()> {
     
     // Shared State for API and Processing Loop
     let state = Arc::new(Mutex::new(SystemState {
-        current_file: "Initializing...".to_string(),
+        current_file: "Ready".to_string(),
         health_score: 1.0,
-        status: "STARTING".to_string(),
-        latest_readings: vec![],
+        status: "IDLE".to_string(),
+        latest_readings: vec![0.0; 8],
         is_training: true,
+        is_running: false,
+        reset_requested: false,
+        threshold: 3.0,
+        train_limit: 500,
+        system_logs: vec![],
     }));
 
     // Clone state for the API thread
@@ -51,9 +73,48 @@ async fn main() -> Result<()> {
         let serve_dir = ServeDir::new("static");
 
         let app = Router::new()
-            .route("/api/status", get(move || async move {
-                let data = api_state.lock().unwrap();
-                Json(data.clone())
+            .route("/api/status", get({
+                let s = api_state.clone();
+                move || async move {
+                    let data = s.lock().unwrap();
+                    Json(data.clone())
+                }
+            }))
+            .route("/api/control", post({
+                let s = api_state.clone();
+                move |Json(payload): Json<ControlCommand>| async move {
+                    let mut data = s.lock().unwrap();
+                    match payload.action.as_str() {
+                        "start" => {
+                            data.is_running = true;
+                            data.status = "STARTING".to_string();
+                            add_log(&mut data, "System started manually.");
+                        },
+                        "stop" => {
+                            data.is_running = false;
+                            data.status = "PAUSED".to_string();
+                            add_log(&mut data, "System paused manually.");
+                        },
+                        "reset" => {
+                            data.reset_requested = true;
+                            data.is_running = false;
+                            data.status = "RESETTING".to_string();
+                            add_log(&mut data, "System reset requested.");
+                        },
+                        _ => {}
+                    }
+                    Json("OK")
+                }
+            }))
+            .route("/api/settings", post({
+                let s = api_state.clone();
+                move |Json(payload): Json<SettingsCommand>| async move {
+                    let mut data = s.lock().unwrap();
+                    data.threshold = payload.threshold;
+                    data.train_limit = payload.train_limit;
+                    add_log(&mut data, &format!("Settings updated: Threshold={}, TrainLimit={}", payload.threshold, payload.train_limit));
+                    Json("OK")
+                }
             }))
             .nest_service("/", serve_dir); // Mount static file server at root
 
@@ -75,70 +136,108 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
+fn add_log(state: &mut SystemState, msg: &str) {
+    let timestamp = chrono::Local::now().format("%H:%M:%S").to_string();
+    let log_entry = format!("[{}] {}", timestamp, msg);
+    state.system_logs.insert(0, log_entry);
+    if state.system_logs.len() > 50 {
+        state.system_logs.pop();
+    }
+}
+
 fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> Result<()> {
     let data_dir = "data/ims/1st_test/1st_test";
     let output_file = "bearing_rms_results.csv";
     let alarm_file = "alarms.log";
     
-    if Path::new(alarm_file).exists() {
-        fs::remove_file(alarm_file)?;
-    }
-
-    if !simulate_mode {
-        println!("Scanning directory: {}", data_dir);
-    }
-    
+    // Initial Setup
     let mut files: Vec<PathBuf> = fs::read_dir(data_dir)?
         .filter_map(|entry| entry.ok())
         .map(|entry| entry.path())
         .filter(|path| path.is_file())
         .filter(|path| path.file_name().and_then(|n| n.to_str()).map(|s| !s.starts_with(".")).unwrap_or(false)) 
         .collect();
-        
     files.sort();
-    
+
     let total_files = files.len();
-    if !simulate_mode {
-        println!("Found {} files. Processing full dataset...", total_files);
-    } else {
-        println!("\n--- LIVE MONITORING SIMULATION STARTED ---\n");
-    }
-
-    let mut wtr = Writer::from_path(output_file)?;
-    let headers = [
-        "Timestamp", 
-        "B1_X", "B1_Y", 
-        "B2_X", "B2_Y", 
-        "B3_X", "B3_Y", 
-        "B4_X", "B4_Y"
-    ];
-    wtr.write_record(&headers)?;
-
+    let mut current_idx = 0;
+    
+    // We'll init detector with defaults, but update it inside loop from state
     let mut detector = AnomalyDetector::new(3.0);
     let mut training_data: Vec<Vec<f64>> = Vec::new();
-    let train_limit = 500;
+    
+    // CSV Writer
+    let mut wtr = Writer::from_path(output_file)?;
+    let headers = [
+        "Timestamp", "B1_X", "B1_Y", "B2_X", "B2_Y", "B3_X", "B3_Y", "B4_X", "B4_Y"
+    ];
+    wtr.write_record(&headers)?;
+    wtr.flush()?;
 
-    for (idx, file_path) in files.iter().enumerate() {
-        if !simulate_mode && idx % 100 == 0 {
-            println!("Processing... [{}/{}]", idx, total_files);
+    loop {
+        // 1. Check Control State
+        let (is_running, reset_req, threshold, train_limit) = {
+            let s = state.lock().unwrap();
+            (s.is_running, s.reset_requested, s.threshold, s.train_limit)
+        };
+
+        if reset_req {
+            println!("Resetting simulation...");
+            current_idx = 0;
+            training_data.clear();
+            detector = AnomalyDetector::new(threshold);
+            
+            // Reset state flags
+            {
+                let mut s = state.lock().unwrap();
+                s.reset_requested = false;
+                s.is_running = false; // Stay paused after reset
+                s.current_file = "Ready".to_string();
+                s.health_score = 1.0;
+                s.status = "IDLE".to_string();
+                s.is_training = true;
+                add_log(&mut s, "System reset complete.");
+            }
+            thread::sleep(Duration::from_millis(500));
+            continue;
         }
 
-        let filename = file_path.file_name()
-            .and_then(|f| f.to_str())
-            .unwrap_or("unknown");
+        if !is_running {
+            thread::sleep(Duration::from_millis(200));
+            continue;
+        }
+
+        if current_idx >= total_files {
+            // End of simulation
+             {
+                let mut s = state.lock().unwrap();
+                s.is_running = false;
+                s.status = "COMPLETED".to_string();
+                add_log(&mut s, "Simulation finished.");
+            }
+            thread::sleep(Duration::from_millis(1000));
+            continue;
+        }
+
+        // Update detector threshold dynamically
+        detector.set_threshold(threshold);
+
+        let file_path = &files[current_idx];
+        let filename = file_path.file_name().and_then(|f| f.to_str()).unwrap_or("unknown");
 
         match calculate_rms(file_path) {
             Ok(rms_values) => {
+                // Write to CSV
                 let mut record = vec![filename.to_string()];
-                for val in &rms_values {
-                    record.push(format!("{:.6}", val));
-                }
+                for val in &rms_values { record.push(format!("{:.6}", val)); }
                 wtr.write_record(&record)?;
+                wtr.flush()?;
 
-                if idx < train_limit {
+                // Logic Phase
+                if current_idx < train_limit {
+                    // TRAINING
                     training_data.push(rms_values.clone());
                     
-                    // Update State (Training)
                     {
                         let mut s = state.lock().unwrap();
                         s.current_file = filename.to_string();
@@ -146,42 +245,39 @@ fn run_processing_loop(state: Arc<Mutex<SystemState>>, simulate_mode: bool) -> R
                         s.is_training = true;
                         s.latest_readings = rms_values.clone();
                     }
-
+                    
                     if simulate_mode {
                        print_live_status(filename, 1.0, &[], &[], true);
                     }
-                } else if idx == train_limit {
-                    if !simulate_mode {
-                        println!("\n--- Training Phase Complete ({}/{} files) ---", train_limit, total_files);
-                    }
+                } else if current_idx == train_limit {
+                    // TRANSITION TO INFERENCE
                     detector.train(&training_data);
-                    if !simulate_mode {
-                        println!("--- Inference Phase Started ---\n");
-                    }
                     training_data.clear();
                     
+                    {
+                         let mut s = state.lock().unwrap();
+                         add_log(&mut s, "Training complete. Switching to monitoring mode.");
+                    }
+
                     process_inference(&detector, &rms_values, filename, alarm_file, &headers, simulate_mode, &state)?;
                 } else {
+                    // INFERENCE
                     process_inference(&detector, &rms_values, filename, alarm_file, &headers, simulate_mode, &state)?;
                 }
 
+                current_idx += 1;
+                
+                // Simulation Delay
                 if simulate_mode {
-                    // Loop continuously for demo purposes? No, just finish the dataset.
-                    thread::sleep(Duration::from_millis(100)); // Slower for API to catch up
+                    thread::sleep(Duration::from_millis(100)); 
                 }
             },
             Err(e) => {
-                eprintln!("Warning: Skipping {:?}: {}", file_path, e);
+                eprintln!("Error processing {:?}: {}", file_path, e);
+                current_idx += 1; // Skip bad file
             }
         }
     }
-    
-    wtr.flush()?;
-    if !simulate_mode {
-        println!("Analysis Complete! Data saved to '{}'. Check '{}' for alerts.", output_file, alarm_file);
-    }
-    
-    Ok(())
 }
 
 fn process_inference(
@@ -197,14 +293,7 @@ fn process_inference(
     let health_score = detector.calculate_health_score(sample);
     let is_critical = anomalies.iter().any(|&x| x);
 
-    // Determine status string
-    let status_str = if health_score > 0.9 {
-        "NORMAL"
-    } else if health_score > 0.5 {
-        "WARNING"
-    } else {
-        "CRITICAL"
-    };
+    let status_str = if health_score > 0.9 { "NORMAL" } else if health_score > 0.5 { "WARNING" } else { "CRITICAL" };
 
     // Update Global State
     {
@@ -214,6 +303,12 @@ fn process_inference(
         s.status = status_str.to_string();
         s.latest_readings = sample.to_vec();
         s.is_training = false;
+        
+        if is_critical {
+             let msg = format!("CRITICAL: Health {:.1}%", health_score * 100.0);
+             // Avoid spamming logs every millisecond, check if last log is same? (Skipped for simplicity)
+             add_log(&mut s, &msg);
+        }
     }
 
     if simulate_mode {
@@ -223,7 +318,6 @@ fn process_inference(
     if is_critical {
         let mut msg = format!("[CRITICAL ALARM] Timestamp: {} -> Health: {:.1}% -> ", timestamp, health_score * 100.0);
         let mut detected = false;
-        
         for (i, &is_anom) in anomalies.iter().enumerate() {
             if is_anom {
                 if detected { msg.push_str(", "); }
@@ -232,53 +326,23 @@ fn process_inference(
             }
         }
         
-        if !simulate_mode {
-            println!("{}", msg);
-        }
-
-        let mut file = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(log_path)?;
+        let mut file = OpenOptions::new().create(true).append(true).open(log_path)?;
         writeln!(file, "{}", msg)?;
     }
     Ok(())
 }
 
 fn print_live_status(timestamp: &str, health: f64, _sample: &[f64], _anomalies: &[bool], training: bool) {
-    // Clear line: \r
     let bar_len = 20;
     let filled = (health * bar_len as f64).round() as usize;
     let empty = bar_len - filled;
-    
     let bar = format!("{}{}", "█".repeat(filled), "░".repeat(empty));
     
-    let status = if training {
-        "TRAINING".to_string()
-    } else if health > 0.9 {
-        "NORMAL  ".to_string()
-    } else if health > 0.5 {
-        "WARNING ".to_string()
-    } else {
-        "CRITICAL".to_string()
-    };
+    let status = if training { "TRAINING".to_string() } else if health > 0.9 { "NORMAL  ".to_string() } else if health > 0.5 { "WARNING ".to_string() } else { "CRITICAL".to_string() };
 
-    // ANSI Colors
-    // Green: \x1b[32m, Yellow: \x1b[33m, Red: \x1b[31m, Reset: \x1b[0m
-    let color = if training {
-        "\x1b[34m" // Blue
-    } else if health > 0.9 {
-        "\x1b[32m" // Green
-    } else if health > 0.5 {
-        "\x1b[33m" // Yellow
-    } else {
-        "\x1b[31m" // Red
-    };
-
+    let color = if training { "\x1b[34m" } else if health > 0.9 { "\x1b[32m" } else if health > 0.5 { "\x1b[33m" } else { "\x1b[31m" };
     print!("\r{} [{}] {}% | {} | {}", color, bar, (health * 100.0) as u32, status, timestamp);
     std::io::stdout().flush().unwrap();
-    
-    // Reset color at the end of line is safer
     print!("\x1b[0m");
 }
 
@@ -296,7 +360,7 @@ fn calculate_rms<P: AsRef<Path>>(path: P) -> Result<Vec<f64>> {
     let mut count = 0;
 
     for result in rdr.records() {
-        let record = result?; // Hata varsa loop dışına çıkar
+        let record = result?; 
         for i in 0..8 {
             if let Some(field) = record.get(i) {
                 if let Ok(val) = field.trim().parse::<f64>() {
@@ -307,14 +371,8 @@ fn calculate_rms<P: AsRef<Path>>(path: P) -> Result<Vec<f64>> {
         count += 1;
     }
     
-    if count == 0 {
-        return Ok(vec![0.0; 8]);
-    }
+    if count == 0 { return Ok(vec![0.0; 8]); }
 
-    let rms: Vec<f64> = sum_squares
-        .iter()
-        .map(|&sum| (sum / count as f64).sqrt())
-        .collect();
-
+    let rms: Vec<f64> = sum_squares.iter().map(|&sum| (sum / count as f64).sqrt()).collect();
     Ok(rms)
 }

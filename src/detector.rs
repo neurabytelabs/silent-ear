@@ -50,6 +50,10 @@ impl AnomalyDetector {
         println!("Model Trained. Baselines: {:?}", self.mean);
     }
 
+    pub fn set_threshold(&mut self, new_threshold: f64) {
+        self.threshold_multiplier = new_threshold;
+    }
+
     /// Yeni gelen veriyi kontrol eder. Normalden sapma varsa true döner.
     pub fn is_anomaly(&self, sample: &[f64]) -> Vec<bool> {
         if !self.is_trained {
