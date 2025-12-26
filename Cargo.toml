@@ -1,6 +1,6 @@
 [package]
 name = "silent-ear"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 authors = ["Mustafa Saraç <mrsarac@gmail.com>"]
 description = "Industrial Edge AI Anomaly Detection System for Predictive Maintenance"

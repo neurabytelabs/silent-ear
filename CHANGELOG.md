@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-12-27
+
+### Added
+- **GitHub Actions CI/CD** - Automated testing, building, and Docker image creation
+- **Custom Error Types** - `thiserror`-based error handling with descriptive messages
+- **Structured Logging** - `tracing` integration with configurable log levels and JSON output
+- **Configuration File Support** - External `config.toml` with environment variable overrides
+- **Comprehensive Test Suite** - 23 unit tests covering detector, config, and edge cases
+
+### Changed
+- Test coverage increased from 5 to 23 tests
+- Rust version requirement updated to 1.83+
+- Improved code quality with clippy compliance (`-D warnings`)
+- Documentation translated to English
+
+### Fixed
+- Docker healthcheck now works correctly (curl installed)
+- All clippy warnings resolved
+
+### Technical Details
+- New dependencies: `thiserror`, `tracing`, `tracing-subscriber`, `config`, `toml`
+- CI runs on every push to master: test → build → docker
+- Configuration priority: ENV vars > config.toml > defaults
+
+---
+
 ## [1.0.0] - 2025-12-26
 
 ### Added
@@ -37,12 +63,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Roadmap
 
-### [1.1.0] - Planned
+### [1.2.0] - Planned
 - MQTT integration for industrial IoT
 - Prometheus metrics endpoint
-- ARM64 (Raspberry Pi) optimization
+- WebSocket for real-time dashboard updates
 
-### [1.2.0] - Planned
+### [1.3.0] - Planned
 - OPC-UA protocol support
 - Real hardware sensor integration (ADXL345)
 
