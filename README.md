@@ -19,22 +19,11 @@ Silent-Ear is a lightweight, high-performance agent that analyzes vibration data
 - **📊 Live Dashboard** — Built-in HTML5 visualization
 - **🐳 Docker Ready** — One command deployment
 
-## 📸 Screenshot
+## 🎬 Demo
 
-```
-┌────────────────────────────────────────────────────────┐
-│  SILENT-EAR v1.0.0         [MONITORING] Health: 94%   │
-├────────────────────────────────────────────────────────┤
-│                                                        │
-│   B1 ████████████████████░░░░  0.142                  │
-│   B2 █████████████████████░░░  0.156                  │
-│   B3 ████████████████████░░░░  0.138                  │
-│   B4 ██████████████████████████████████  0.487  ⚠️    │
-│                                                        │
-│   Status: WARNING - Bearing 4 showing degradation     │
-│   Last Update: 2025-12-26 02:30:15                    │
-└────────────────────────────────────────────────────────┘
-```
+![Silent-Ear Dashboard Demo](docs/images/demo.gif)
+
+*Real-time anomaly detection with health scoring and live visualization*
 
 ## 🚀 Quick Start
 
