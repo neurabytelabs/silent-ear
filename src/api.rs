@@ -74,7 +74,10 @@ fn control_handler(
                 "start" => {
                     info!("System started via API");
                     data.is_running = true;
-                    data.status = "STARTING".to_string();
+                    // Don't overwrite COMPLETED status - let processing loop handle auto-reset
+                    if data.status != "COMPLETED" {
+                        data.status = "STARTING".to_string();
+                    }
                     data.add_log("System started manually.");
                 }
                 "stop" => {

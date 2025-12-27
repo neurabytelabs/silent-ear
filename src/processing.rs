@@ -36,6 +36,9 @@ pub struct ProcessingEngine {
     /// Training data accumulator
     training_data: Vec<Vec<f64>>,
 
+    /// Number of samples processed in current run
+    samples_processed: usize,
+
     /// Whether simulation mode (console output) is enabled
     simulate_mode: bool,
 
@@ -57,6 +60,7 @@ impl ProcessingEngine {
         Self {
             detector: AnomalyDetector::new(threshold),
             training_data: Vec::new(),
+            samples_processed: 0,
             simulate_mode,
             config,
             broadcaster,
@@ -73,8 +77,6 @@ impl ProcessingEngine {
         let mut wtr = Writer::from_path(&self.config.output_file)?;
         wtr.write_record(HEADERS)?;
         wtr.flush()?;
-
-        let mut samples_processed = 0usize;
 
         loop {
             // Check state flags
@@ -102,7 +104,27 @@ impl ProcessingEngine {
             let reading = match source.read_next().await? {
                 Some(r) => r,
                 None => {
-                    // End of data
+                    // Check if we're already completed or this is first completion
+                    let current_status = {
+                        let s = state.lock().unwrap();
+                        s.status.clone()
+                    };
+
+                    if current_status == "COMPLETED" {
+                        // User restarted from COMPLETED state - auto-reset and continue
+                        info!("Auto-resetting from COMPLETED state");
+                        self.handle_reset(source, &state).await?;
+                        // Re-enable running since user explicitly started
+                        {
+                            let mut s = state.lock().unwrap();
+                            s.is_running = true;
+                            s.add_log("Auto-reset complete. Restarting simulation.");
+                            self.broadcaster.broadcast(&s);
+                        }
+                        continue;
+                    }
+
+                    // End of data - first completion
                     info!("Processing completed");
                     {
                         let mut s = state.lock().unwrap();
@@ -120,16 +142,16 @@ impl ProcessingEngine {
             self.write_csv_record(&mut wtr, &reading)?;
 
             // Process reading
-            if samples_processed < train_limit {
-                self.process_training(&reading, samples_processed, &state);
-            } else if samples_processed == train_limit {
+            if self.samples_processed < train_limit {
+                self.process_training(&reading, self.samples_processed, &state);
+            } else if self.samples_processed == train_limit {
                 self.finish_training(&state);
                 self.process_inference(&reading, &state)?;
             } else {
                 self.process_inference(&reading, &state)?;
             }
 
-            samples_processed += 1;
+            self.samples_processed += 1;
         }
     }
 
@@ -144,8 +166,9 @@ impl ProcessingEngine {
         // Reset source
         source.reset().await?;
 
-        // Reset training data
+        // Reset training data and sample counter
         self.training_data.clear();
+        self.samples_processed = 0;
 
         // Get new threshold from state
         let threshold = {
@@ -356,5 +379,6 @@ mod tests {
         let broadcaster = Arc::new(Broadcaster::new());
         let engine = ProcessingEngine::new(3.0, false, config, broadcaster);
         assert!(engine.training_data.is_empty());
+        assert_eq!(engine.samples_processed, 0);
     }
 }
