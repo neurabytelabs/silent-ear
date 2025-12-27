@@ -13,6 +13,8 @@ mod config;
 mod datasource;
 mod detector;
 mod error;
+mod metrics;
+mod mqtt;
 mod processing;
 mod state;
 mod websocket;
@@ -51,11 +53,19 @@ fn init_tracing(config: &AppConfig) {
     }
 }
 
+/// Command line options
+struct CliOptions {
+    simulate_mode: bool,
+    source_type: DataSourceType,
+    mqtt_enabled: bool,
+}
+
 /// Parse command line arguments
-fn parse_args() -> (bool, DataSourceType) {
+fn parse_args() -> CliOptions {
     let args: Vec<String> = env::args().collect();
 
     let simulate_mode = args.contains(&"--simulate".to_string());
+    let mqtt_enabled = args.contains(&"--mqtt".to_string());
 
     let source_type = if args.contains(&"--mock".to_string()) {
         DataSourceType::Mock
@@ -65,7 +75,11 @@ fn parse_args() -> (bool, DataSourceType) {
         DataSourceType::File
     };
 
-    (simulate_mode, source_type)
+    CliOptions {
+        simulate_mode,
+        source_type,
+        mqtt_enabled,
+    }
 }
 
 #[tokio::main]
@@ -82,13 +96,13 @@ async fn main() -> anyhow::Result<()> {
     info!(version = env!("CARGO_PKG_VERSION"), "Silent-Ear starting");
 
     // Parse command line arguments
-    let (simulate_mode, source_type) = parse_args();
+    let cli = parse_args();
 
-    if simulate_mode {
+    if cli.simulate_mode {
         info!("Running in simulation mode");
     }
 
-    info!(source = ?source_type, "Data source type");
+    info!(source = ?cli.source_type, "Data source type");
 
     // Create shared state
     let state = new_shared_state(config.detector.threshold, config.detector.train_limit);
@@ -97,7 +111,28 @@ async fn main() -> anyhow::Result<()> {
     let broadcaster = Arc::new(Broadcaster::new());
     info!("WebSocket broadcaster initialized");
 
-    // Spawn API server with WebSocket support
+    // Initialize MQTT if enabled
+    if cli.mqtt_enabled {
+        let mqtt_config = mqtt::MqttConfig::from_env();
+        match mqtt::MqttPublisher::new(mqtt_config).await {
+            Ok((publisher, _handle)) => {
+                let publisher = Arc::new(publisher);
+                info!(broker = %publisher.broker_address(), "MQTT publisher initialized");
+
+                // Start MQTT bridge
+                let mqtt_rx = broadcaster.subscribe();
+                let mqtt_pub = publisher.clone();
+                tokio::spawn(async move {
+                    mqtt::mqtt_bridge(mqtt_rx, mqtt_pub).await;
+                });
+            }
+            Err(e) => {
+                error!(error = %e, "Failed to initialize MQTT, continuing without it");
+            }
+        }
+    }
+
+    // Spawn API server with WebSocket support and metrics
     let api_state = state.clone();
     let api_broadcaster = broadcaster.clone();
     let server_config = config.server.clone();
@@ -111,7 +146,7 @@ async fn main() -> anyhow::Result<()> {
     // Create processing engine with broadcaster
     let mut engine = ProcessingEngine::new(
         config.detector.threshold,
-        simulate_mode,
+        cli.simulate_mode,
         config.data.clone(),
         broadcaster,
     );
@@ -120,7 +155,7 @@ async fn main() -> anyhow::Result<()> {
     let process_state = state.clone();
     let data_config = config.data.clone();
 
-    match source_type {
+    match cli.source_type {
         DataSourceType::File => {
             let mut source = FileDataSource::new(&data_config.directory);
             run_with_source(&mut engine, &mut source, process_state).await?;

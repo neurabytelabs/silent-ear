@@ -10,6 +10,8 @@ Silent-Ear is a lightweight, high-performance agent that analyzes vibration data
 
 > 🏭 *"Your factory's sense of hearing."*
 
+> ⚠️ **Disclaimer:** This software is provided for **demonstration and educational purposes only**. It is not certified for industrial safety-critical applications. Do not use for life-safety or mission-critical systems without proper validation and certification. See [LICENSE](LICENSE) for full terms.
+
 ## ✨ Features
 
 - **🚀 High Performance** — Processes 40M+ data points in under 1.5 seconds
@@ -126,6 +128,36 @@ Configure detector parameters.
 }
 ```
 
+### GET /metrics
+
+Prometheus metrics endpoint for observability integration.
+
+```
+# HELP silent_ear_health_score Current health score (0.0 to 1.0)
+# TYPE silent_ear_health_score gauge
+silent_ear_health_score 0.94
+
+# HELP silent_ear_samples_processed_total Total number of samples processed
+# TYPE silent_ear_samples_processed_total counter
+silent_ear_samples_processed_total 1500
+```
+
+## 🔌 MQTT Integration
+
+Enable MQTT publishing for industrial IoT integration:
+
+```bash
+# Run with MQTT enabled
+./silent-ear --mock --mqtt
+
+# Configure broker via environment
+MQTT_HOST=broker.local MQTT_PORT=1883 ./silent-ear --mock --mqtt
+```
+
+**Topics:**
+- `silent-ear/health` - Health score updates (JSON)
+- `silent-ear/alerts` - Critical alerts with retained messages
+
 ## 📊 Dataset
 
 This project uses the **NASA IMS Bearing Dataset** (Set No. 2):
@@ -142,15 +174,17 @@ cargo test
 ```
 
 ```
-running 37 tests
+running 42 tests
 test detector::tests::test_new_detector ... ok
 test detector::tests::test_train_detector ... ok
 test detector::tests::test_anomaly_detection ... ok
 test detector::tests::test_health_score ... ok
 test websocket::tests::test_broadcaster_broadcast ... ok
-... (32 more tests)
+test mqtt::tests::test_mqtt_config_default ... ok
+test metrics::tests::test_health_score_metric ... ok
+... (35 more tests)
 
-test result: ok. 37 passed; 0 failed
+test result: ok. 42 passed; 0 failed
 ```
 
 ## 🛠️ Tech Stack
@@ -168,10 +202,10 @@ test result: ok. 37 passed; 0 failed
 - [x] WebSocket real-time updates
 - [x] Raspberry Pi / ARM64 support
 - [x] Multi-arch Docker images
+- [x] MQTT integration (industrial IoT)
+- [x] Prometheus metrics export (`/metrics`)
 - [ ] Real hardware sensor support (ADXL345)
-- [ ] MQTT integration (industrial IoT)
 - [ ] OPC-UA support (factory automation)
-- [ ] Prometheus metrics export
 - [ ] Machine learning with Burn framework
 
 ## 🤝 Contributing

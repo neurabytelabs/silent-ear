@@ -5,7 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - feature/hardware-ready
+## [Unreleased]
+
+### Planned
+- Demo deployment at silent-ear.neurabytelabs.com
+- OPC-UA protocol support
+
+---
+
+## [1.3.0] - 2025-12-27
+
+### Added
+- **MQTT Integration** - Publish state updates to MQTT broker for industrial IoT integration
+  - Topics: `silent-ear/health`, `silent-ear/alerts`
+  - Environment config: `MQTT_HOST`, `MQTT_PORT`, `MQTT_CLIENT_ID`
+  - CLI flag: `--mqtt` to enable
+- **Prometheus Metrics** - Expose metrics at `/metrics` endpoint for observability
+  - `silent_ear_health_score` - Current health score (0.0 to 1.0)
+  - `silent_ear_samples_processed_total` - Total samples processed
+  - `silent_ear_anomalies_detected_total` - Total anomalies detected
+  - `silent_ear_critical_alerts_total` - Total critical alerts
+  - `silent_ear_processing_duration_seconds` - Processing time histogram
+  - Per-channel sensor readings (B1_X, B1_Y, B2_X, B2_Y, B3_X, B3_Y, B4_X, B4_Y)
+- **Disclaimer** - Added safety disclaimer to README per legal review
+
+### Changed
+- Test coverage increased from 37 to 42 tests (+5 new tests)
+- Dependencies: added `rumqttc`, `prometheus`, `lazy_static`
+
+### Technical Details
+- MQTT bridge subscribes to WebSocket broadcast for state updates
+- Prometheus registry with lazy_static gauges, counters, and histograms
+- Metrics router merged with main API router
+
+---
+
+## [1.2.1] - 2025-12-27
+
+### Fixed
+- **Reset Counter Bug** - `samples_processed` counter now properly resets when simulation resets
+- **Auto-Restart from COMPLETED State** - Starting simulation from COMPLETED state now triggers automatic reset instead of immediate completion
+
+### Technical Details
+- Moved `samples_processed` from local variable to `ProcessingEngine` struct field
+- API control handler now preserves COMPLETED status to allow processing loop to detect and auto-reset
+- Added auto-reset logic in processing loop when user starts from COMPLETED state
+
+---
+
+## [1.2.0] - 2025-12-27
 
 ### Added
 - **Modular Architecture** - main.rs refactored from 574 to 143 lines (~75% reduction)
@@ -37,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.0] - 2025-12-27
+## [1.1.0] - 2025-12-26
 
 ### Added
 - **GitHub Actions CI/CD** - Automated testing, building, and Docker image creation
@@ -95,14 +143,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Roadmap
 
-### [1.2.0] - Planned
-- MQTT integration for industrial IoT
-- Prometheus metrics endpoint
-- WebSocket for real-time dashboard updates
-
-### [1.3.0] - Planned
+### [1.4.0] - Planned
 - OPC-UA protocol support
 - Real hardware sensor integration (ADXL345)
+- I2C/SPI sensor driver
 
 ### [2.0.0] - Planned
 - Machine learning models with Burn framework

@@ -6,12 +6,14 @@ use csv::Writer;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::sync::Arc;
+use std::time::Instant;
 use tracing::{debug, info, warn};
 
 use crate::config::DataConfig;
 use crate::datasource::{DataSource, SensorReading};
 use crate::detector::AnomalyDetector;
 use crate::error::Result;
+use crate::metrics;
 use crate::state::SharedState;
 use crate::websocket::Broadcaster;
 
@@ -141,7 +143,9 @@ impl ProcessingEngine {
             // Write to CSV
             self.write_csv_record(&mut wtr, &reading)?;
 
-            // Process reading
+            // Process reading with timing
+            let start = Instant::now();
+
             if self.samples_processed < train_limit {
                 self.process_training(&reading, self.samples_processed, &state);
             } else if self.samples_processed == train_limit {
@@ -150,6 +154,11 @@ impl ProcessingEngine {
             } else {
                 self.process_inference(&reading, &state)?;
             }
+
+            // Record metrics
+            let duration = start.elapsed().as_secs_f64();
+            metrics::record_processing_time(duration);
+            metrics::record_sample_processed();
 
             self.samples_processed += 1;
         }
@@ -210,12 +219,19 @@ impl ProcessingEngine {
         self.training_data.push(reading.values.clone());
         debug!(file = %reading.source_id, idx = idx, "Training sample");
 
+        // Update training sample count metric
+        metrics::set_training_samples(self.training_data.len());
+
         {
             let mut s = state.lock().unwrap();
             s.current_file = reading.source_id.clone();
             s.status = "TRAINING".to_string();
             s.is_training = true;
             s.latest_readings = reading.values.clone();
+
+            // Update metrics from state
+            metrics::update_from_state(&s);
+
             self.broadcaster.broadcast(&s);
         }
 
@@ -240,6 +256,11 @@ impl ProcessingEngine {
         let health_score = self.detector.calculate_health_score(&reading.values);
         let is_critical = anomalies.iter().any(|&x| x);
 
+        // Record anomaly if any channel detected
+        if anomalies.iter().any(|&x| x) {
+            metrics::record_anomaly();
+        }
+
         let status_str = if health_score > 0.9 {
             "NORMAL"
         } else if health_score > 0.5 {
@@ -260,6 +281,9 @@ impl ProcessingEngine {
                 let msg = format!("CRITICAL: Health {:.1}%", health_score * 100.0);
                 s.add_log(&msg);
             }
+
+            // Update metrics from state
+            metrics::update_from_state(&s);
 
             self.broadcaster.broadcast(&s);
         }

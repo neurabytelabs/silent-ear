@@ -84,5 +84,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3000/api/status || exit 1
 
-# Run the application
-CMD ["./silent-ear", "--simulate"]
+# Run the application (mock mode for demo, override with --simulate for real data)
+CMD ["./silent-ear", "--mock"]

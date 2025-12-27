@@ -15,6 +15,7 @@ use tracing::{info, warn};
 
 use crate::config::ServerConfig;
 use crate::error::{Result, SilentEarError};
+use crate::metrics;
 use crate::state::SharedState;
 use crate::websocket::{ws_handler, Broadcaster};
 
@@ -31,16 +32,21 @@ pub struct SettingsCommand {
     pub train_limit: usize,
 }
 
-/// Create the API router with all endpoints including WebSocket
+/// Create the API router with all endpoints including WebSocket and metrics
 pub fn create_router(state: SharedState, broadcaster: Arc<Broadcaster>) -> Router {
     let serve_dir = ServeDir::new("static");
 
-    Router::new()
+    // API routes that need WebSocket state
+    let api_routes = Router::new()
         .route("/api/status", get(status_handler(state.clone())))
         .route("/api/control", post(control_handler(state.clone())))
         .route("/api/settings", post(settings_handler(state.clone())))
         .route("/ws", get(ws_handler))
-        .with_state(broadcaster)
+        .with_state(broadcaster);
+
+    // Combine with metrics (no state needed) and static files
+    api_routes
+        .merge(metrics::metrics_router())
         .nest_service("/", serve_dir)
 }
 
