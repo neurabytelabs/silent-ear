@@ -84,7 +84,7 @@ async fn handle_socket(socket: WebSocket, broadcaster: Arc<Broadcaster>) {
     // Spawn task to send broadcasts to this client
     let send_task = tokio::spawn(async move {
         while let Ok(msg) = rx.recv().await {
-            if sender.send(Message::Text(msg.into())).await.is_err() {
+            if sender.send(Message::Text(msg)).await.is_err() {
                 break;
             }
         }
