@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - feature/hardware-ready
+
+### Added
+- **Modular Architecture** - main.rs refactored from 574 to 143 lines (~75% reduction)
+- **DataSource Abstraction** - Trait-based data source system for hardware flexibility
+- **FileDataSource** - NASA IMS dataset simulation with RMS calculation
+- **MockDataSource** - Testing without data files, configurable degradation simulation
+- **ProcessingEngine** - Unified processing loop with DataSource integration
+- **SystemState Module** - Thread-safe state management with helper methods
+- **API Module** - Separated REST endpoints for better maintainability
+- **CLI Arguments** - `--mock` for MockDataSource, `--sensor` for future hardware
+
+### Changed
+- Test coverage increased from 23 to 34 tests (+11 new tests)
+- Dependencies: added `async-trait`, `rand`, `tempfile` (dev)
+
+### Technical Details
+- Async DataSource trait with `async_trait` macro
+- SensorReading struct for unified data format
+- Calibration mode support in trait (for hardware sensors)
+- Degradation simulation for bearing failure testing
+
+---
+
 ## [1.1.0] - 2025-12-27
 
 ### Added
