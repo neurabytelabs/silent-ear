@@ -4,6 +4,7 @@
 //! to monitor industrial equipment health in real-time.
 
 use std::env;
+use std::sync::Arc;
 use tracing::{error, info, Level};
 use tracing_subscriber::EnvFilter;
 
@@ -14,12 +15,14 @@ mod detector;
 mod error;
 mod processing;
 mod state;
+mod websocket;
 
 use config::AppConfig;
 use datasource::{DataSourceType, FileDataSource, MockDataSource};
 use error::Result;
 use processing::ProcessingEngine;
 use state::new_shared_state;
+use websocket::Broadcaster;
 
 /// Initialize tracing/logging
 fn init_tracing(config: &AppConfig) {
@@ -90,21 +93,27 @@ async fn main() -> anyhow::Result<()> {
     // Create shared state
     let state = new_shared_state(config.detector.threshold, config.detector.train_limit);
 
-    // Spawn API server
+    // Create WebSocket broadcaster for real-time updates
+    let broadcaster = Arc::new(Broadcaster::new());
+    info!("WebSocket broadcaster initialized");
+
+    // Spawn API server with WebSocket support
     let api_state = state.clone();
+    let api_broadcaster = broadcaster.clone();
     let server_config = config.server.clone();
 
     tokio::spawn(async move {
-        if let Err(e) = api::run_server(api_state, server_config).await {
+        if let Err(e) = api::run_server(api_state, api_broadcaster, server_config).await {
             error!(error = %e, "API server failed");
         }
     });
 
-    // Create processing engine
+    // Create processing engine with broadcaster
     let mut engine = ProcessingEngine::new(
         config.detector.threshold,
         simulate_mode,
         config.data.clone(),
+        broadcaster,
     );
 
     // Run with appropriate data source

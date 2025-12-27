@@ -278,7 +278,7 @@
         // --- Chart Setup ---
         const ctx = document.getElementById('sensorChart').getContext('2d');
         const maxDataPoints = 50;
-        
+
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -301,7 +301,7 @@
                 plugins: { legend: { display: false } },
                 scales: {
                     x: { display: false },
-                    y: { 
+                    y: {
                         grid: { color: '#1a3c5a' },
                         ticks: { color: '#607d8b', font: { family: 'JetBrains Mono' } }
                     }
@@ -311,6 +311,59 @@
 
         // --- State ---
         let lastLogCount = 0;
+        let ws = null;
+        let wsReconnectTimer = null;
+
+        // --- WebSocket Setup ---
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                addLogEntry('WebSocket connected to server', 'info');
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    updateUI(data);
+                } catch (e) {
+                    console.error('WebSocket message parse error:', e);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                addLogEntry('WebSocket disconnected, reconnecting...', 'warning');
+                scheduleReconnect();
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        function scheduleReconnect() {
+            if (wsReconnectTimer) return;
+            wsReconnectTimer = setTimeout(() => {
+                wsReconnectTimer = null;
+                connectWebSocket();
+            }, 2000);
+        }
+
+        function addLogEntry(message, type = 'info') {
+            const container = document.getElementById('log-container');
+            const colorClass = type === 'warning' ? 'text-[#ffbd00]' :
+                              type === 'error' ? 'text-[#ff2a6d]' : 'text-gray-400';
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${colorClass}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
 
         // --- Controls ---
         function toggleModal(modalId) {
@@ -364,92 +417,97 @@
             document.getElementById('threshold-value').innerText = e.target.value;
         });
 
-        async function fetchStatus() {
-            try {
-                const response = await fetch('/api/status');
-                const data = await response.json();
+        function updateUI(data) {
+            // 1. Update Header Status
+            const statusEl = document.getElementById('system-status');
+            const dotEl = document.getElementById('status-dot');
+            statusEl.innerText = data.status;
 
-                // 1. Update Header Status
-                const statusEl = document.getElementById('system-status');
-                const dotEl = document.getElementById('status-dot');
-                statusEl.innerText = data.status;
-                
-                if (data.status === 'NORMAL') {
-                    statusEl.className = 'text-xl font-bold text-[#00f2ff] glow-text';
-                    dotEl.className = 'status-indicator bg-[#00f2ff]';
-                } else if (data.status === 'WARNING') {
-                    statusEl.className = 'text-xl font-bold text-[#ffbd00] glow-text';
-                    dotEl.className = 'status-indicator bg-[#ffbd00]';
-                } else if (data.status === 'CRITICAL') {
-                    statusEl.className = 'text-xl font-bold text-[#ff2a6d] glow-danger';
-                    dotEl.className = 'status-indicator bg-[#ff2a6d]';
-                } else if (data.status === 'TRAINING') {
-                     statusEl.className = 'text-xl font-bold text-blue-400 glow-text';
-                     dotEl.className = 'status-indicator bg-blue-400 animate-pulse';
-                } else {
-                    statusEl.className = 'text-xl font-bold text-gray-400';
-                    dotEl.className = 'status-indicator bg-gray-400';
-                }
+            if (data.status === 'NORMAL') {
+                statusEl.className = 'text-xl font-bold text-[#00f2ff] glow-text';
+                dotEl.className = 'status-indicator bg-[#00f2ff]';
+            } else if (data.status === 'WARNING') {
+                statusEl.className = 'text-xl font-bold text-[#ffbd00] glow-text';
+                dotEl.className = 'status-indicator bg-[#ffbd00]';
+            } else if (data.status === 'CRITICAL') {
+                statusEl.className = 'text-xl font-bold text-[#ff2a6d] glow-danger';
+                dotEl.className = 'status-indicator bg-[#ff2a6d]';
+            } else if (data.status === 'TRAINING') {
+                statusEl.className = 'text-xl font-bold text-blue-400 glow-text';
+                dotEl.className = 'status-indicator bg-blue-400 animate-pulse';
+            } else {
+                statusEl.className = 'text-xl font-bold text-gray-400';
+                dotEl.className = 'status-indicator bg-gray-400';
+            }
 
-                // 2. Update File Info
-                document.getElementById('current-file').innerText = `FILE: ${data.current_file}`;
+            // 2. Update File Info
+            document.getElementById('current-file').innerText = `FILE: ${data.current_file}`;
 
-                // 3. Update Health Circle
-                const healthPct = Math.round(data.health_score * 100);
-                document.getElementById('health-value').innerText = `${healthPct}%`;
-                
-                // SVG Circle Logic: 2 * PI * R (70) ≈ 440
-                const offset = 440 - (440 * data.health_score);
-                const circle = document.getElementById('health-circle');
-                circle.style.strokeDashoffset = offset;
-                circle.style.stroke = data.health_score > 0.9 ? '#00f2ff' : (data.health_score > 0.5 ? '#ffbd00' : '#ff2a6d');
+            // 3. Update Health Circle
+            const healthPct = Math.round(data.health_score * 100);
+            document.getElementById('health-value').innerText = `${healthPct}%`;
 
-                // 4. Update Readings Grid
-                if (data.latest_readings && data.latest_readings.length === 8) {
-                    data.latest_readings.forEach((val, idx) => {
-                         const el = document.getElementById(`val-${idx}`);
-                         el.innerText = val.toFixed(4);
-                         // Simple highlight if value is high (naive check for visual flair)
-                         el.style.color = val > 0.15 ? '#ff2a6d' : 'var(--primary)';
+            // SVG Circle Logic: 2 * PI * R (70) ≈ 440
+            const offset = 440 - (440 * data.health_score);
+            const circle = document.getElementById('health-circle');
+            circle.style.strokeDashoffset = offset;
+            circle.style.stroke = data.health_score > 0.9 ? '#00f2ff' : (data.health_score > 0.5 ? '#ffbd00' : '#ff2a6d');
+
+            // 4. Update Readings Grid
+            if (data.latest_readings && data.latest_readings.length === 8) {
+                data.latest_readings.forEach((val, idx) => {
+                    const el = document.getElementById(`val-${idx}`);
+                    el.innerText = val.toFixed(4);
+                    // Simple highlight if value is high
+                    el.style.color = val > 0.15 ? '#ff2a6d' : 'var(--primary)';
+                });
+
+                // 5. Update Chart
+                if (data.is_running || data.status === 'TRAINING') {
+                    chart.data.datasets.forEach((dataset, i) => {
+                        dataset.data.push(data.latest_readings[i]);
+                        if (dataset.data.length > maxDataPoints) dataset.data.shift();
                     });
-
-                    // 5. Update Chart
-                    if (data.is_running || data.status === 'TRAINING') {
-                        chart.data.datasets.forEach((dataset, i) => {
-                            dataset.data.push(data.latest_readings[i]);
-                            if (dataset.data.length > maxDataPoints) dataset.data.shift();
-                        });
-                        chart.update('none'); // 'none' for performance
-                    }
+                    chart.update('none'); // 'none' for performance
                 }
+            }
 
-                // 6. Update Logs
-                if (data.system_logs && data.system_logs.length > 0) {
-                     // Check if new logs exist by comparing length or content hash (simplified here)
-                     const container = document.getElementById('log-container');
-                     
-                     // Naive rebuild for simplicity (in prod, append only new)
-                     if (JSON.stringify(data.system_logs) !== JSON.stringify(window.lastLogs)) {
-                        container.innerHTML = data.system_logs.map(log => {
-                            let colorClass = "text-gray-300";
-                            if(log.includes("CRITICAL")) colorClass = "text-[#ff2a6d]";
-                            if(log.includes("WARNING")) colorClass = "text-[#ffbd00]";
-                            if(log.includes("Training")) colorClass = "text-blue-300";
-                            return `<div class="log-entry ${colorClass}">${log}</div>`;
-                        }).join('');
-                        window.lastLogs = data.system_logs;
-                     }
+            // 6. Update Logs
+            if (data.system_logs && data.system_logs.length > 0) {
+                const container = document.getElementById('log-container');
+
+                // Only rebuild if logs changed
+                if (JSON.stringify(data.system_logs) !== JSON.stringify(window.lastLogs)) {
+                    container.innerHTML = data.system_logs.map(log => {
+                        let colorClass = "text-gray-300";
+                        if (log.includes("CRITICAL")) colorClass = "text-[#ff2a6d]";
+                        if (log.includes("WARNING")) colorClass = "text-[#ffbd00]";
+                        if (log.includes("Training")) colorClass = "text-blue-300";
+                        if (log.includes("WebSocket")) colorClass = "text-gray-400";
+                        return `<div class="log-entry ${colorClass}">${log}</div>`;
+                    }).join('');
+                    window.lastLogs = data.system_logs;
                 }
-
-                // Sync Inputs if first load (optional, skipped for now to avoid overwriting user edits)
-
-            } catch (err) {
-                console.error("Status fetch error", err);
             }
         }
 
-        // Loop
-        setInterval(fetchStatus, 500); // 2Hz refresh
+        // Initial status fetch (fallback) and WebSocket connection
+        async function initializeConnection() {
+            try {
+                // Get initial status via REST API
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                updateUI(data);
+            } catch (err) {
+                console.error("Initial status fetch error", err);
+            }
+
+            // Connect WebSocket for real-time updates
+            connectWebSocket();
+        }
+
+        // Initialize on page load
+        initializeConnection();
     </script>
 </body>
 </html>

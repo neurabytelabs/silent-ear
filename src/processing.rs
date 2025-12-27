@@ -5,6 +5,7 @@
 use csv::Writer;
 use std::fs::OpenOptions;
 use std::io::Write;
+use std::sync::Arc;
 use tracing::{debug, info, warn};
 
 use crate::config::DataConfig;
@@ -12,6 +13,7 @@ use crate::datasource::{DataSource, SensorReading};
 use crate::detector::AnomalyDetector;
 use crate::error::Result;
 use crate::state::SharedState;
+use crate::websocket::Broadcaster;
 
 /// CSV column headers for output
 const HEADERS: [&str; 9] = [
@@ -39,16 +41,25 @@ pub struct ProcessingEngine {
 
     /// Data configuration
     config: DataConfig,
+
+    /// WebSocket broadcaster for real-time updates
+    broadcaster: Arc<Broadcaster>,
 }
 
 impl ProcessingEngine {
     /// Create a new processing engine
-    pub fn new(threshold: f64, simulate_mode: bool, config: DataConfig) -> Self {
+    pub fn new(
+        threshold: f64,
+        simulate_mode: bool,
+        config: DataConfig,
+        broadcaster: Arc<Broadcaster>,
+    ) -> Self {
         Self {
             detector: AnomalyDetector::new(threshold),
             training_data: Vec::new(),
             simulate_mode,
             config,
+            broadcaster,
         }
     }
 
@@ -98,6 +109,7 @@ impl ProcessingEngine {
                         s.is_running = false;
                         s.status = "COMPLETED".to_string();
                         s.add_log("Processing finished.");
+                        self.broadcaster.broadcast(&s);
                     }
                     tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
                     continue;
@@ -148,6 +160,7 @@ impl ProcessingEngine {
         {
             let mut s = state.lock().unwrap();
             s.reset();
+            self.broadcaster.broadcast(&s);
         }
 
         tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
@@ -180,6 +193,7 @@ impl ProcessingEngine {
             s.status = "TRAINING".to_string();
             s.is_training = true;
             s.latest_readings = reading.values.clone();
+            self.broadcaster.broadcast(&s);
         }
 
         if self.simulate_mode {
@@ -223,6 +237,8 @@ impl ProcessingEngine {
                 let msg = format!("CRITICAL: Health {:.1}%", health_score * 100.0);
                 s.add_log(&msg);
             }
+
+            self.broadcaster.broadcast(&s);
         }
 
         if self.simulate_mode {
@@ -337,7 +353,8 @@ mod tests {
             output_file: "test.csv".to_string(),
             alarm_file: "test_alarm.log".to_string(),
         };
-        let engine = ProcessingEngine::new(3.0, false, config);
+        let broadcaster = Arc::new(Broadcaster::new());
+        let engine = ProcessingEngine::new(3.0, false, config, broadcaster);
         assert!(engine.training_data.is_empty());
     }
 }

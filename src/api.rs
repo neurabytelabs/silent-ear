@@ -1,6 +1,7 @@
-//! REST API module for Silent-Ear
+//! REST API and WebSocket module for Silent-Ear
 //!
-//! Provides HTTP endpoints for system control and status monitoring.
+//! Provides HTTP endpoints for system control and status monitoring,
+//! plus WebSocket endpoint for real-time updates.
 
 use axum::{
     routing::{get, post},
@@ -8,12 +9,14 @@ use axum::{
 };
 use serde::Deserialize;
 use std::net::SocketAddr;
+use std::sync::Arc;
 use tower_http::services::ServeDir;
 use tracing::{info, warn};
 
 use crate::config::ServerConfig;
 use crate::error::{Result, SilentEarError};
 use crate::state::SharedState;
+use crate::websocket::{ws_handler, Broadcaster};
 
 /// Control command payload
 #[derive(Deserialize)]
@@ -28,14 +31,16 @@ pub struct SettingsCommand {
     pub train_limit: usize,
 }
 
-/// Create the API router with all endpoints
-pub fn create_router(state: SharedState) -> Router {
+/// Create the API router with all endpoints including WebSocket
+pub fn create_router(state: SharedState, broadcaster: Arc<Broadcaster>) -> Router {
     let serve_dir = ServeDir::new("static");
 
     Router::new()
         .route("/api/status", get(status_handler(state.clone())))
         .route("/api/control", post(control_handler(state.clone())))
         .route("/api/settings", post(settings_handler(state.clone())))
+        .route("/ws", get(ws_handler))
+        .with_state(broadcaster)
         .nest_service("/", serve_dir)
 }
 
@@ -121,9 +126,13 @@ fn settings_handler(
     }
 }
 
-/// Start the API server
-pub async fn run_server(state: SharedState, config: ServerConfig) -> Result<()> {
-    let app = create_router(state);
+/// Start the API server with WebSocket support
+pub async fn run_server(
+    state: SharedState,
+    broadcaster: Arc<Broadcaster>,
+    config: ServerConfig,
+) -> Result<()> {
+    let app = create_router(state, broadcaster);
 
     let addr: SocketAddr = format!("{}:{}", config.host, config.port)
         .parse()
@@ -131,7 +140,7 @@ pub async fn run_server(state: SharedState, config: ServerConfig) -> Result<()> 
             message: format!("Invalid address: {}:{}", config.host, config.port),
         })?;
 
-    info!(address = %addr, "API server starting");
+    info!(address = %addr, "API server starting (REST + WebSocket)");
 
     let listener =
         tokio::net::TcpListener::bind(addr)

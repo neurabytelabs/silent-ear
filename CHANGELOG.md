@@ -16,16 +16,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SystemState Module** - Thread-safe state management with helper methods
 - **API Module** - Separated REST endpoints for better maintainability
 - **CLI Arguments** - `--mock` for MockDataSource, `--sensor` for future hardware
+- **WebSocket Module** - Real-time dashboard updates via WebSocket broadcast
+- **Broadcaster Pattern** - Centralized state broadcast to all connected clients
 
 ### Changed
-- Test coverage increased from 23 to 34 tests (+11 new tests)
-- Dependencies: added `async-trait`, `rand`, `tempfile` (dev)
+- Test coverage increased from 23 to 37 tests (+14 new tests)
+- Dependencies: added `async-trait`, `rand`, `futures-util`, `tempfile` (dev)
+- Dashboard now uses WebSocket instead of 500ms polling (lower latency, reduced bandwidth)
 
 ### Technical Details
 - Async DataSource trait with `async_trait` macro
 - SensorReading struct for unified data format
 - Calibration mode support in trait (for hardware sensors)
 - Degradation simulation for bearing failure testing
+- WebSocket endpoint at `/ws` for real-time updates
+- Automatic WebSocket reconnection on disconnect
 
 ---
 
