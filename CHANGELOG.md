@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test coverage increased from 23 to 37 tests (+14 new tests)
 - Dependencies: added `async-trait`, `rand`, `futures-util`, `tempfile` (dev)
 - Dashboard now uses WebSocket instead of 500ms polling (lower latency, reduced bandwidth)
+- CI now builds multi-arch Docker images (AMD64 + ARM64)
 
 ### Technical Details
 - Async DataSource trait with `async_trait` macro
@@ -31,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Degradation simulation for bearing failure testing
 - WebSocket endpoint at `/ws` for real-time updates
 - Automatic WebSocket reconnection on disconnect
+- Cross-compilation for ARM64 (Raspberry Pi 4/5)
+- GitHub Container Registry for Docker images
 
 ---
 

@@ -15,9 +15,10 @@ Silent-Ear is a lightweight, high-performance agent that analyzes vibration data
 - **🚀 High Performance** — Processes 40M+ data points in under 1.5 seconds
 - **🧠 Statistical AI** — Uses Mean + 3σ anomaly detection (no heavy ML frameworks)
 - **❤️ Health Scoring** — Real-time 0-100% health score for machine degradation
-- **🔌 REST API** — JSON endpoints for network integration
-- **📊 Live Dashboard** — Built-in HTML5 visualization
-- **🐳 Docker Ready** — One command deployment
+- **🔌 REST API + WebSocket** — JSON endpoints + real-time updates
+- **📊 Live Dashboard** — Built-in HTML5 visualization with WebSocket
+- **🐳 Docker Ready** — Multi-arch (AMD64 + ARM64) one command deployment
+- **🍓 Raspberry Pi Ready** — Native ARM64 support for edge deployment
 
 ## 🎬 Demo
 
@@ -30,14 +31,30 @@ Silent-Ear is a lightweight, high-performance agent that analyzes vibration data
 ### Option 1: Docker (Recommended)
 
 ```bash
+# AMD64 (x86_64)
+docker run -p 3000:3000 ghcr.io/mrsarac/silent-ear:latest
+
+# Or with docker-compose
 docker-compose up -d
 # Open http://localhost:3000
 ```
 
-### Option 2: From Source
+### Option 2: Raspberry Pi (ARM64)
 
 ```bash
-# Prerequisites: Rust 1.70+
+# Docker on Raspberry Pi 4/5
+docker run -p 3000:3000 ghcr.io/mrsarac/silent-ear:latest
+
+# Or download pre-built binary
+curl -LO https://github.com/mrsarac/silent-ear/releases/latest/download/silent-ear-linux-arm64.tar.gz
+tar -xzf silent-ear-linux-arm64.tar.gz
+./silent-ear-linux-arm64 --mock
+```
+
+### Option 3: From Source
+
+```bash
+# Prerequisites: Rust 1.83+
 git clone https://github.com/mrsarac/silent-ear.git
 cd silent-ear
 
@@ -48,6 +65,9 @@ cd silent-ear
 ./run.sh
 # or
 cargo run --release -- --simulate
+
+# Or with mock data (no dataset needed)
+cargo run --release -- --mock
 ```
 
 ## 🏗️ Architecture
@@ -122,14 +142,15 @@ cargo test
 ```
 
 ```
-running 23 tests
+running 37 tests
 test detector::tests::test_new_detector ... ok
 test detector::tests::test_train_detector ... ok
 test detector::tests::test_anomaly_detection ... ok
 test detector::tests::test_health_score ... ok
-... (21 more tests)
+test websocket::tests::test_broadcaster_broadcast ... ok
+... (32 more tests)
 
-test result: ok. 23 passed; 0 failed
+test result: ok. 37 passed; 0 failed
 ```
 
 ## 🛠️ Tech Stack
@@ -144,11 +165,13 @@ test result: ok. 23 passed; 0 failed
 
 ## 🗺️ Roadmap
 
+- [x] WebSocket real-time updates
+- [x] Raspberry Pi / ARM64 support
+- [x] Multi-arch Docker images
+- [ ] Real hardware sensor support (ADXL345)
 - [ ] MQTT integration (industrial IoT)
 - [ ] OPC-UA support (factory automation)
 - [ ] Prometheus metrics export
-- [ ] Raspberry Pi / ARM64 optimization
-- [ ] Real hardware sensor support (ADXL345)
 - [ ] Machine learning with Burn framework
 
 ## 🤝 Contributing
