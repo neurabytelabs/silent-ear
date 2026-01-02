@@ -29,7 +29,7 @@ toml = "0.8"
 async-trait = "0.1"
 rand = "0.8"
 rumqttc = "0.24"
-prometheus = "0.13"
+prometheus = "0.14"
 lazy_static = "1.4"
 
 [dev-dependencies]
