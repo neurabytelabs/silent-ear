@@ -1,6 +1,10 @@
 # Build artifacts
 target/
 Cargo.lock
+node_modules/
+frontend/node_modules/
+frontend/coverage/
+.vite/
 
 # Local config (use config.toml.example as template)
 config.toml
@@ -14,6 +18,8 @@ data/ims/
 *.csv
 *.log
 *.png
+!docs/experience/screenshots/*.png
+!docs/experience/screenshots-v2/*.png
 
 # IDE
 .idea/
@@ -29,3 +35,17 @@ Thumbs.db
 
 # Keep sample data
 !data/sample/
+
+# Local agent / tooling files (keep out of the public repo)
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.claude/
+.cursor/
+.hermes/
+.nodeterm/
+.codex/
+node_modules/
+
+# Documentation images
+!docs/images/*.png
