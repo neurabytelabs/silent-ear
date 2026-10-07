@@ -1,0 +1,1894 @@
+{
+  "baseUrl": "http://127.0.0.1:3000",
+  "qaLoop": "loop2",
+  "chromium": "<playwright-chromium>",
+  "captures": [
+    {
+      "name": "desktop-overview.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "full-assembly",
+      "station": "B1",
+      "axis": "X",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      }
+    },
+    {
+      "name": "desktop-inspect-b1x.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "inspect-station",
+      "station": "B1",
+      "axis": "X",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 49,
+        "triangles": 20274,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.2683281572999748
+      }
+    },
+    {
+      "name": "desktop-exploded-b1x.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "exploded-signal",
+      "station": "B1",
+      "axis": "X",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 49,
+        "triangles": 20274,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.6456004956627589
+      }
+    },
+    {
+      "name": "desktop-full-restored.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "full-assembly-restored",
+      "station": "B1",
+      "axis": "X",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      }
+    },
+    {
+      "name": "within-b1x-hero.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 9,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "model",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12106 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "9",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "within-b1x-facts.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 9,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "adjacent-facts",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12106 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "9",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "within-b1x-result.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 9,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "result-timeline",
+      "state": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12106 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "9",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "approach-b1x-hero.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 10,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "model",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Approaching demo threshold",
+        "explanation": "A controlled RMS channel is nearing the selected upper statistical threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Approaching upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12386 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "10",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "approach-b1x-facts.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 10,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "adjacent-facts",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Approaching demo threshold",
+        "explanation": "A controlled RMS channel is nearing the selected upper statistical threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Approaching upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12386 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "10",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "approach-b1x-result.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 10,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "result-timeline",
+      "state": {
+        "status": "Approaching demo threshold",
+        "explanation": "A controlled RMS channel is nearing the selected upper statistical threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Approaching upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12386 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "10",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "equality-b1x-hero.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 11,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "model",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Approaching demo threshold",
+        "explanation": "At the demo threshold — not exceeded. The rule changes state only when the RMS value is strictly above the upper threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At threshold — not exceeded",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12549 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "11",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "equality-b1x-facts.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 11,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "adjacent-facts",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Approaching demo threshold",
+        "explanation": "At the demo threshold — not exceeded. The rule changes state only when the RMS value is strictly above the upper threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At threshold — not exceeded",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12549 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "11",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "equality-b1x-result.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 11,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "result-timeline",
+      "state": {
+        "status": "Approaching demo threshold",
+        "explanation": "At the demo threshold — not exceeded. The rule changes state only when the RMS value is strictly above the upper threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At threshold — not exceeded",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12549 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "11",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "exceeded-b1x-hero.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 12,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "model",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Demo threshold exceeded",
+        "explanation": "At least one controlled RMS channel is above mean plus the selected sigma multiplier.",
+        "score": "90.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Above upper demo threshold",
+        "exceeded": "Above upper demo threshold: B1_X",
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.13110 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "12",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "exceeded-b1x-facts.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 12,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "adjacent-facts",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Demo threshold exceeded",
+        "explanation": "At least one controlled RMS channel is above mean plus the selected sigma multiplier.",
+        "score": "90.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Above upper demo threshold",
+        "exceeded": "Above upper demo threshold: B1_X",
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.13110 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "12",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "exceeded-b1x-result.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 12,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "result-timeline",
+      "state": {
+        "status": "Demo threshold exceeded",
+        "explanation": "At least one controlled RMS channel is above mean plus the selected sigma multiplier.",
+        "score": "90.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Above upper demo threshold",
+        "exceeded": "Above upper demo threshold: B1_X",
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.13110 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "12",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "returned-b1x-hero.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 17,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "model",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.11521 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "17",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "returned-b1x-facts.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 17,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "adjacent-facts",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "state": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.11521 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "17",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "returned-b1x-result.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "scenario": "controlled-deviation-v1",
+      "frameIndex": 17,
+      "station": "B1",
+      "axis": "X",
+      "mode": "full-assembly",
+      "surface": "result-timeline",
+      "state": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.11521 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "17",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    {
+      "name": "loop2-full-restored-after-explode.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fromFrame": 12,
+      "explodedMetrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 49,
+        "triangles": 20274,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.6456004956627589
+      },
+      "restoredMetrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "restoredFacts": {
+        "mode": "Overview",
+        "station": "station-control-B1",
+        "axis": "X direction",
+        "canvasMode": "full-assembly"
+      }
+    },
+    {
+      "name": "loop2-backward-to-equality.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "transition": "exceeded-12-backward-to-equality-11",
+      "backwardFacts": {
+        "status": "Approaching demo threshold",
+        "comparison": "At threshold — not exceeded",
+        "exceeded": null,
+        "score": "100.0out of 100",
+        "frame": "11"
+      }
+    },
+    {
+      "name": "loop2-returned-after-exceeded.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "transition": "exceeded-12-to-returned-17",
+      "returnedFacts": {
+        "status": "Within demo reference",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "frame": "17",
+        "mode": "full-assembly",
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 70,
+          "triangles": 36890,
+          "points": 0,
+          "lines": 50,
+          "geometries": 67,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        }
+      }
+    },
+    {
+      "name": "loop2-unselected-global-exceeded.png",
+      "loop": 2,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "frame": 12,
+      "unselectedGlobalFacts": {
+        "selectedChannel": "B2_Y",
+        "selectedComparison": "At or below upper demo threshold",
+        "globalExceeded": "Above upper demo threshold: B1_X",
+        "result": "Demo threshold exceeded",
+        "canvasStation": "B2",
+        "canvasAxis": "Y"
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "name": "mode-sequence",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "canonical-within-b1x.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "canonical-approach-b1x.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "canonical-equality-b1x.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "canonical-exceeded-b1x.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "canonical-returned-b1x.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop2-state-transitions",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "interaction-stress",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "projected-pick-check",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "projected-pick-B1",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "projected-pick-B2",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "projected-pick-B3",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "projected-pick-B4",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    }
+  ],
+  "assertions": {
+    "modeSequence": {
+      "inspect": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 49,
+        "triangles": 20274,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.2683281572999748
+      },
+      "exploded": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 49,
+        "triangles": 20274,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.6456004956627589
+      },
+      "restored": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      }
+    },
+    "canonicalStates": {
+      "within": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12106 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "9",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      },
+      "approach": {
+        "status": "Approaching demo threshold",
+        "explanation": "A controlled RMS channel is nearing the selected upper statistical threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Approaching upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12386 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "10",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      },
+      "equality": {
+        "status": "Approaching demo threshold",
+        "explanation": "At the demo threshold — not exceeded. The rule changes state only when the RMS value is strictly above the upper threshold.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At threshold — not exceeded",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.12549 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "11",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      },
+      "exceeded": {
+        "status": "Demo threshold exceeded",
+        "explanation": "At least one controlled RMS channel is above mean plus the selected sigma multiplier.",
+        "score": "90.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "Above upper demo threshold",
+        "exceeded": "Above upper demo threshold: B1_X",
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.13110 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "12",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      },
+      "returned": {
+        "status": "Within demo reference",
+        "explanation": "All current RMS channels remain at or below their selected upper statistical thresholds.",
+        "score": "100.0out of 100",
+        "channel": "Bearing 1 · X",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "measurementFacts": [
+          {
+            "label": "Current RMS",
+            "value": "0.11521 demo units"
+          },
+          {
+            "label": "Fixed mean",
+            "value": "0.11147 demo units"
+          },
+          {
+            "label": "σ",
+            "value": "0.00467 demo units"
+          },
+          {
+            "label": "Upper rule",
+            "value": "0.12549 demo units"
+          }
+        ],
+        "canvas": {
+          "frame": "17",
+          "station": "B1",
+          "axis": "X",
+          "channel": "0",
+          "mode": "full-assembly"
+        }
+      }
+    },
+    "loop2Transitions": {
+      "explodedMetrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 49,
+        "triangles": 20274,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.6456004956627589
+      },
+      "restoredMetrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "restoredFacts": {
+        "mode": "Overview",
+        "station": "station-control-B1",
+        "axis": "X direction",
+        "canvasMode": "full-assembly"
+      },
+      "backwardFacts": {
+        "status": "Approaching demo threshold",
+        "comparison": "At threshold — not exceeded",
+        "exceeded": null,
+        "score": "100.0out of 100",
+        "frame": "11"
+      },
+      "returnedFacts": {
+        "status": "Within demo reference",
+        "comparison": "At or below upper demo threshold",
+        "exceeded": null,
+        "frame": "17",
+        "mode": "full-assembly",
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 70,
+          "triangles": 36890,
+          "points": 0,
+          "lines": 50,
+          "geometries": 67,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        }
+      },
+      "unselectedGlobalFacts": {
+        "selectedChannel": "B2_Y",
+        "selectedComparison": "At or below upper demo threshold",
+        "globalExceeded": "Above upper demo threshold: B1_X",
+        "result": "Demo threshold exceeded",
+        "canvasStation": "B2",
+        "canvasAxis": "Y"
+      }
+    },
+    "interactionStress": {
+      "parity": [
+        {
+          "station": "station-control-B1",
+          "axis": "X direction",
+          "channel": "B1_X",
+          "breadcrumb": "Test cell / Bearing 1 / X direction"
+        },
+        {
+          "station": "station-control-B1",
+          "axis": "Y direction",
+          "channel": "B1_Y",
+          "breadcrumb": "Test cell / Bearing 1 / Y direction"
+        },
+        {
+          "station": "station-control-B2",
+          "axis": "X direction",
+          "channel": "B2_X",
+          "breadcrumb": "Test cell / Bearing 2 / X direction"
+        },
+        {
+          "station": "station-control-B2",
+          "axis": "Y direction",
+          "channel": "B2_Y",
+          "breadcrumb": "Test cell / Bearing 2 / Y direction"
+        },
+        {
+          "station": "station-control-B3",
+          "axis": "X direction",
+          "channel": "B3_X",
+          "breadcrumb": "Test cell / Bearing 3 / X direction"
+        },
+        {
+          "station": "station-control-B3",
+          "axis": "Y direction",
+          "channel": "B3_Y",
+          "breadcrumb": "Test cell / Bearing 3 / Y direction"
+        },
+        {
+          "station": "station-control-B4",
+          "axis": "X direction",
+          "channel": "B4_X",
+          "breadcrumb": "Test cell / Bearing 4 / X direction"
+        },
+        {
+          "station": "station-control-B4",
+          "axis": "Y direction",
+          "channel": "B4_Y",
+          "breadcrumb": "Test cell / Bearing 4 / Y direction"
+        }
+      ],
+      "lifecycle": {
+        "canvasCount": 1,
+        "selectedMode": "Overview",
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 70,
+          "triangles": 36890,
+          "points": 0,
+          "lines": 50,
+          "geometries": 70,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        }
+      },
+      "remounts": [
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        }
+      ]
+    },
+    "htmlParityAndLifecycle": {
+      "parity": [
+        {
+          "station": "station-control-B1",
+          "axis": "X direction",
+          "channel": "B1_X",
+          "breadcrumb": "Test cell / Bearing 1 / X direction"
+        },
+        {
+          "station": "station-control-B1",
+          "axis": "Y direction",
+          "channel": "B1_Y",
+          "breadcrumb": "Test cell / Bearing 1 / Y direction"
+        },
+        {
+          "station": "station-control-B2",
+          "axis": "X direction",
+          "channel": "B2_X",
+          "breadcrumb": "Test cell / Bearing 2 / X direction"
+        },
+        {
+          "station": "station-control-B2",
+          "axis": "Y direction",
+          "channel": "B2_Y",
+          "breadcrumb": "Test cell / Bearing 2 / Y direction"
+        },
+        {
+          "station": "station-control-B3",
+          "axis": "X direction",
+          "channel": "B3_X",
+          "breadcrumb": "Test cell / Bearing 3 / X direction"
+        },
+        {
+          "station": "station-control-B3",
+          "axis": "Y direction",
+          "channel": "B3_Y",
+          "breadcrumb": "Test cell / Bearing 3 / Y direction"
+        },
+        {
+          "station": "station-control-B4",
+          "axis": "X direction",
+          "channel": "B4_X",
+          "breadcrumb": "Test cell / Bearing 4 / X direction"
+        },
+        {
+          "station": "station-control-B4",
+          "axis": "Y direction",
+          "channel": "B4_Y",
+          "breadcrumb": "Test cell / Bearing 4 / Y direction"
+        }
+      ],
+      "lifecycle": {
+        "canvasCount": 1,
+        "selectedMode": "Overview",
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 70,
+          "triangles": 36890,
+          "points": 0,
+          "lines": 50,
+          "geometries": 70,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        }
+      },
+      "remounts": [
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        },
+        {
+          "canvases": 1,
+          "sceneHosts": 1
+        }
+      ]
+    },
+    "projectedPicks": {
+      "hitPointCount": 1868,
+      "componentCount": 3,
+      "projectedStations": {
+        "B2": {
+          "x": 1129,
+          "y": 372
+        },
+        "B1": {
+          "x": 1225,
+          "y": 396
+        },
+        "B4": {
+          "x": 773,
+          "y": 432
+        },
+        "B3": {
+          "x": 845,
+          "y": 472
+        }
+      },
+      "selections": [
+        {
+          "x": 1225,
+          "y": 396,
+          "expectedStation": "B1",
+          "station": "B1",
+          "pressed": "station-control-B1",
+          "mode": "inspect-station"
+        },
+        {
+          "x": 1129,
+          "y": 372,
+          "expectedStation": "B2",
+          "station": "B2",
+          "pressed": "station-control-B2",
+          "mode": "inspect-station"
+        },
+        {
+          "x": 845,
+          "y": 472,
+          "expectedStation": "B3",
+          "station": "B3",
+          "pressed": "station-control-B3",
+          "mode": "inspect-station"
+        },
+        {
+          "x": 773,
+          "y": 432,
+          "expectedStation": "B4",
+          "station": "B4",
+          "pressed": "station-control-B4",
+          "mode": "inspect-station"
+        }
+      ],
+      "uniqueStations": [
+        "B1",
+        "B2",
+        "B3",
+        "B4"
+      ]
+    },
+    "loop2Acceptance": {
+      "canonicalFacts": true,
+      "returnedClearsExceeded": true,
+      "backwardClearsExceeded": true,
+      "unselectedGlobalExceeded": true,
+      "fullRestoration": true,
+      "htmlParity": true,
+      "lifecycle": true,
+      "fourProjectedPicks": true
+    }
+  },
+  "failures": []
+}

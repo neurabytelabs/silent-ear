@@ -1,0 +1,969 @@
+{
+  "baseUrl": "http://127.0.0.1:3000",
+  "qaLoop": "loop3",
+  "chromium": "<playwright-chromium>",
+  "captures": [
+    {
+      "name": "loop3-desktop-1440x900.png",
+      "loop": 3,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 61,
+        "triangles": 19418,
+        "points": 0,
+        "lines": 50,
+        "geometries": 58,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "facts": {
+        "horizontalOverflow": false,
+        "canvasCount": 1,
+        "station": "B1",
+        "axis": "X",
+        "mode": "full-assembly",
+        "result": "Approaching demo threshold"
+      }
+    },
+    {
+      "name": "loop3-desktop-1280x800.png",
+      "loop": 3,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 61,
+        "triangles": 19418,
+        "points": 0,
+        "lines": 50,
+        "geometries": 58,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 648,
+        "cssHeight": 606,
+        "bufferWidth": 648,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "facts": {
+        "horizontalOverflow": false,
+        "canvasCount": 1,
+        "station": "B1",
+        "axis": "X",
+        "mode": "full-assembly",
+        "result": "Approaching demo threshold"
+      }
+    },
+    {
+      "name": "loop3-focus-state-1440x900.png",
+      "loop": 3,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "focusFacts": {
+        "text": "Run the controlled demo",
+        "className": "primary-action",
+        "outlineStyle": "solid",
+        "outlineWidth": "3px",
+        "outlineColor": "rgb(30, 98, 204)"
+      }
+    },
+    {
+      "name": "loop3-mobile-390x844.png",
+      "loop": 3,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "tier": "low",
+        "dpr": 1,
+        "drawCalls": 45,
+        "triangles": 5678,
+        "points": 0,
+        "lines": 12,
+        "geometries": 45,
+        "textures": 0,
+        "programs": 6,
+        "sceneObjects": 109,
+        "instancedMeshes": 19,
+        "instances": 137,
+        "cssWidth": 356,
+        "cssHeight": 267,
+        "bufferWidth": 356,
+        "bufferHeight": 267,
+        "shadowEnabled": false,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "facts": {
+        "viewportWidth": 390,
+        "pageWidth": 390,
+        "horizontalOverflow": false,
+        "controlsOpen": false,
+        "canvasCount": 1,
+        "canvasMode": "full-assembly",
+        "meaningfulMachinePixels": {
+          "x": 17,
+          "y": 496.21875,
+          "width": 356,
+          "height": 266.5,
+          "top": 496.21875,
+          "right": 373,
+          "bottom": 762.71875,
+          "left": 17
+        }
+      }
+    },
+    {
+      "name": "loop3-mobile-exploded-390x844.png",
+      "loop": 3,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "metrics": {
+        "tier": "low",
+        "dpr": 1,
+        "drawCalls": 42,
+        "triangles": 5270,
+        "points": 0,
+        "lines": 12,
+        "geometries": 45,
+        "textures": 0,
+        "programs": 6,
+        "sceneObjects": 109,
+        "instancedMeshes": 19,
+        "instances": 137,
+        "cssWidth": 356,
+        "cssHeight": 267,
+        "bufferWidth": 356,
+        "bufferHeight": 267,
+        "shadowEnabled": false,
+        "activeAnimationReasons": [],
+        "restorationError": 0.6456004956627589
+      },
+      "touchFacts": {
+        "below44": []
+      },
+      "facts": {
+        "scrollY": 0,
+        "canvasMode": "exploded-signal",
+        "canvasRect": {
+          "x": 17,
+          "y": 496.21875,
+          "width": 356,
+          "height": 266.5,
+          "top": 496.21875,
+          "right": 373,
+          "bottom": 762.71875,
+          "left": 17
+        }
+      }
+    },
+    {
+      "name": "loop3-reduced-motion-full.png",
+      "loop": 3,
+      "viewport": {
+        "width": 1200,
+        "height": 900
+      },
+      "before": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 61,
+        "triangles": 19418,
+        "points": 0,
+        "lines": 50,
+        "geometries": 58,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 607,
+        "cssHeight": 586,
+        "bufferWidth": 607,
+        "bufferHeight": 586,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "after": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 61,
+        "triangles": 19418,
+        "points": 0,
+        "lines": 50,
+        "geometries": 58,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 607,
+        "cssHeight": 586,
+        "bufferWidth": 607,
+        "bufferHeight": 586,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "facts": {
+        "mediaMatches": true,
+        "machinePlaybackDisabled": true,
+        "journeyPlaybackDisabled": true,
+        "modeNoteVisible": true,
+        "frameAfterDirectStep": "9",
+        "comparisonAfterDirectStep": "At or below upper demo threshold",
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "loop3-no-webgl-full.png",
+      "loop": 3,
+      "viewport": {
+        "width": 1200,
+        "height": 900
+      },
+      "facts": {
+        "canvasCount": 0,
+        "fallbackVisible": true,
+        "schematicTitle": "Full conveyor test cell schematic",
+        "schematicDescription": "Motor and coupling drive a two-drum conveyor with four bearing stations, four sensor nodes and retained carriers.",
+        "schematicStations": [
+          "Bearing 1; channels B1_X · B1_Y",
+          "Bearing 2; channels B2_X · B2_Y",
+          "Bearing 3; channels B3_X · B3_Y",
+          "Bearing 4; channels B4_X · B4_Y"
+        ],
+        "channelMap": [
+          "B1_X · B1_Y",
+          "B2_X · B2_Y",
+          "B3_X · B3_Y",
+          "B4_X · B4_Y"
+        ],
+        "signalKey": [
+          "01Controlled RMS fixture",
+          "02Eight per-window RMS values",
+          "03Fixed reference mean and σ",
+          "04Upper mean + kσ comparison",
+          "05Demo threshold state"
+        ],
+        "tableRows": 8,
+        "modes": [
+          "Overview",
+          "Inspect station",
+          "Exploded signal"
+        ],
+        "selectedChannel": "B4_Y",
+        "selectedComparison": "At or below upper demo threshold",
+        "globalResult": "Demo threshold exceeded",
+        "globalExceeded": "Above upper demo threshold: B1_X",
+        "scoreCaveatVisible": true,
+        "productTruth": {
+          "controlled": true,
+          "perWindowRms": true,
+          "fixedReference": true,
+          "strictUpper": true,
+          "amplifiedNotReconstructed": true,
+          "educationalBoundary": true
+        },
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "loop3-zoom-200-proxy-full.png",
+      "loop": 3,
+      "viewport": {
+        "width": 640,
+        "height": 450
+      },
+      "facts": {
+        "method": "640x450 CSS viewport at DPR 2; reflow proxy, not native browser zoom",
+        "viewportWidth": 640,
+        "pageWidth": 640,
+        "horizontalOverflow": false,
+        "statusVisible": true,
+        "status": "Demo threshold exceeded",
+        "localTableScroll": true
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "name": "loop3-loop3-desktop-1440x900.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-loop3-desktop-1280x800.png",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-focus",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-mobile",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-reduced-motion",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-no-webgl",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-zoom-200-proxy",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-context-loss-recovery",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-performance-desktop",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "loop3-performance-mobile",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    }
+  ],
+  "assertions": {
+    "loop3": {
+      "desktop1440": {
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 61,
+          "triangles": 19418,
+          "points": 0,
+          "lines": 50,
+          "geometries": 58,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "facts": {
+          "horizontalOverflow": false,
+          "canvasCount": 1,
+          "station": "B1",
+          "axis": "X",
+          "mode": "full-assembly",
+          "result": "Approaching demo threshold"
+        }
+      },
+      "desktop1280": {
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 61,
+          "triangles": 19418,
+          "points": 0,
+          "lines": 50,
+          "geometries": 58,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 648,
+          "cssHeight": 606,
+          "bufferWidth": 648,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "facts": {
+          "horizontalOverflow": false,
+          "canvasCount": 1,
+          "station": "B1",
+          "axis": "X",
+          "mode": "full-assembly",
+          "result": "Approaching demo threshold"
+        }
+      },
+      "focusFacts": {
+        "text": "Run the controlled demo",
+        "className": "primary-action",
+        "outlineStyle": "solid",
+        "outlineWidth": "3px",
+        "outlineColor": "rgb(30, 98, 204)"
+      },
+      "mobile": {
+        "overviewFacts": {
+          "viewportWidth": 390,
+          "pageWidth": 390,
+          "horizontalOverflow": false,
+          "controlsOpen": false,
+          "canvasCount": 1,
+          "canvasMode": "full-assembly",
+          "meaningfulMachinePixels": {
+            "x": 17,
+            "y": 496.21875,
+            "width": 356,
+            "height": 266.5,
+            "top": 496.21875,
+            "right": 373,
+            "bottom": 762.71875,
+            "left": 17
+          }
+        },
+        "explodedFacts": {
+          "scrollY": 0,
+          "canvasMode": "exploded-signal",
+          "canvasRect": {
+            "x": 17,
+            "y": 496.21875,
+            "width": 356,
+            "height": 266.5,
+            "top": 496.21875,
+            "right": 373,
+            "bottom": 762.71875,
+            "left": 17
+          }
+        },
+        "touchFacts": {
+          "below44": []
+        },
+        "overviewMetrics": {
+          "tier": "low",
+          "dpr": 1,
+          "drawCalls": 45,
+          "triangles": 5678,
+          "points": 0,
+          "lines": 12,
+          "geometries": 45,
+          "textures": 0,
+          "programs": 6,
+          "sceneObjects": 109,
+          "instancedMeshes": 19,
+          "instances": 137,
+          "cssWidth": 356,
+          "cssHeight": 267,
+          "bufferWidth": 356,
+          "bufferHeight": 267,
+          "shadowEnabled": false,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "explodedMetrics": {
+          "tier": "low",
+          "dpr": 1,
+          "drawCalls": 42,
+          "triangles": 5270,
+          "points": 0,
+          "lines": 12,
+          "geometries": 45,
+          "textures": 0,
+          "programs": 6,
+          "sceneObjects": 109,
+          "instancedMeshes": 19,
+          "instances": 137,
+          "cssWidth": 356,
+          "cssHeight": 267,
+          "bufferWidth": 356,
+          "bufferHeight": 267,
+          "shadowEnabled": false,
+          "activeAnimationReasons": [],
+          "restorationError": 0.6456004956627589
+        },
+        "restoredMetrics": {
+          "tier": "low",
+          "dpr": 1,
+          "drawCalls": 45,
+          "triangles": 5678,
+          "points": 0,
+          "lines": 12,
+          "geometries": 45,
+          "textures": 0,
+          "programs": 6,
+          "sceneObjects": 109,
+          "instancedMeshes": 19,
+          "instances": 137,
+          "cssWidth": 356,
+          "cssHeight": 267,
+          "bufferWidth": 356,
+          "bufferHeight": 267,
+          "shadowEnabled": false,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "realInteraction": {
+          "station": "B4",
+          "mode": "inspect-station",
+          "pressed": "station-control-B4"
+        }
+      },
+      "reduced": {
+        "facts": {
+          "mediaMatches": true,
+          "machinePlaybackDisabled": true,
+          "journeyPlaybackDisabled": true,
+          "modeNoteVisible": true,
+          "frameAfterDirectStep": "9",
+          "comparisonAfterDirectStep": "At or below upper demo threshold",
+          "horizontalOverflow": false
+        },
+        "before": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 61,
+          "triangles": 19418,
+          "points": 0,
+          "lines": 50,
+          "geometries": 58,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 607,
+          "cssHeight": 586,
+          "bufferWidth": 607,
+          "bufferHeight": 586,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "after": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 61,
+          "triangles": 19418,
+          "points": 0,
+          "lines": 50,
+          "geometries": 58,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 607,
+          "cssHeight": 586,
+          "bufferWidth": 607,
+          "bufferHeight": 586,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        }
+      },
+      "fallback": {
+        "canvasCount": 0,
+        "fallbackVisible": true,
+        "schematicTitle": "Full conveyor test cell schematic",
+        "schematicDescription": "Motor and coupling drive a two-drum conveyor with four bearing stations, four sensor nodes and retained carriers.",
+        "schematicStations": [
+          "Bearing 1; channels B1_X · B1_Y",
+          "Bearing 2; channels B2_X · B2_Y",
+          "Bearing 3; channels B3_X · B3_Y",
+          "Bearing 4; channels B4_X · B4_Y"
+        ],
+        "channelMap": [
+          "B1_X · B1_Y",
+          "B2_X · B2_Y",
+          "B3_X · B3_Y",
+          "B4_X · B4_Y"
+        ],
+        "signalKey": [
+          "01Controlled RMS fixture",
+          "02Eight per-window RMS values",
+          "03Fixed reference mean and σ",
+          "04Upper mean + kσ comparison",
+          "05Demo threshold state"
+        ],
+        "tableRows": 8,
+        "modes": [
+          "Overview",
+          "Inspect station",
+          "Exploded signal"
+        ],
+        "selectedChannel": "B4_Y",
+        "selectedComparison": "At or below upper demo threshold",
+        "globalResult": "Demo threshold exceeded",
+        "globalExceeded": "Above upper demo threshold: B1_X",
+        "scoreCaveatVisible": true,
+        "productTruth": {
+          "controlled": true,
+          "perWindowRms": true,
+          "fixedReference": true,
+          "strictUpper": true,
+          "amplifiedNotReconstructed": true,
+          "educationalBoundary": true
+        },
+        "horizontalOverflow": false
+      },
+      "zoom": {
+        "method": "640x450 CSS viewport at DPR 2; reflow proxy, not native browser zoom",
+        "viewportWidth": 640,
+        "pageWidth": 640,
+        "horizontalOverflow": false,
+        "statusVisible": true,
+        "status": "Demo threshold exceeded",
+        "localTableScroll": true
+      },
+      "resilience": {
+        "contextLoss": {
+          "dispatched": true,
+          "prevented": true
+        },
+        "fallbackAfterLoss": {
+          "canvases": 0,
+          "fallbackVisible": true
+        },
+        "recoveryMounts": [
+          {
+            "canvases": 1,
+            "hosts": 1,
+            "metrics": {
+              "tier": "high",
+              "dpr": 1,
+              "drawCalls": 61,
+              "triangles": 19418,
+              "points": 0,
+              "lines": 50,
+              "geometries": 58,
+              "textures": 1,
+              "programs": 10,
+              "sceneObjects": 122,
+              "instancedMeshes": 18,
+              "instances": 173,
+              "cssWidth": 607,
+              "cssHeight": 586,
+              "bufferWidth": 607,
+              "bufferHeight": 586,
+              "shadowEnabled": true,
+              "activeAnimationReasons": [],
+              "restorationError": 0
+            }
+          },
+          {
+            "canvases": 1,
+            "hosts": 1,
+            "metrics": {
+              "tier": "high",
+              "dpr": 1,
+              "drawCalls": 61,
+              "triangles": 19418,
+              "points": 0,
+              "lines": 50,
+              "geometries": 58,
+              "textures": 1,
+              "programs": 10,
+              "sceneObjects": 122,
+              "instancedMeshes": 18,
+              "instances": 173,
+              "cssWidth": 607,
+              "cssHeight": 586,
+              "bufferWidth": 607,
+              "bufferHeight": 586,
+              "shadowEnabled": true,
+              "activeAnimationReasons": [],
+              "restorationError": 0
+            }
+          },
+          {
+            "canvases": 1,
+            "hosts": 1,
+            "metrics": {
+              "tier": "high",
+              "dpr": 1,
+              "drawCalls": 61,
+              "triangles": 19418,
+              "points": 0,
+              "lines": 50,
+              "geometries": 58,
+              "textures": 1,
+              "programs": 10,
+              "sceneObjects": 122,
+              "instancedMeshes": 18,
+              "instances": 173,
+              "cssWidth": 607,
+              "cssHeight": 586,
+              "bufferWidth": 607,
+              "bufferHeight": 586,
+              "shadowEnabled": true,
+              "activeAnimationReasons": [],
+              "restorationError": 0
+            }
+          }
+        ]
+      },
+      "performance": {
+        "desktop": {
+          "warmupMs": 2000,
+          "minimumFps": 45,
+          "pacing": {
+            "requestedDurationMs": 5000,
+            "observedDurationMs": 5016.4,
+            "frameCount": 269,
+            "fps": 53.424766765010766,
+            "medianGapMs": 16.699999999999818,
+            "p95GapMs": 33.30000000000018,
+            "p99GapMs": 33.400000000000546,
+            "maxGapMs": 33.400000000000546,
+            "gapsAbove33_3": 24,
+            "gapsAbove50": 0
+          },
+          "playingMetrics": {
+            "tier": "high",
+            "dpr": 1,
+            "drawCalls": 61,
+            "triangles": 19418,
+            "points": 0,
+            "lines": 50,
+            "geometries": 58,
+            "textures": 1,
+            "programs": 10,
+            "sceneObjects": 122,
+            "instancedMeshes": 18,
+            "instances": 173,
+            "cssWidth": 729,
+            "cssHeight": 606,
+            "bufferWidth": 729,
+            "bufferHeight": 606,
+            "shadowEnabled": true,
+            "activeAnimationReasons": [
+              "playback"
+            ],
+            "restorationError": 0
+          },
+          "settledMetrics": {
+            "tier": "high",
+            "dpr": 1,
+            "drawCalls": 61,
+            "triangles": 19418,
+            "points": 0,
+            "lines": 50,
+            "geometries": 58,
+            "textures": 1,
+            "programs": 10,
+            "sceneObjects": 122,
+            "instancedMeshes": 18,
+            "instances": 173,
+            "cssWidth": 729,
+            "cssHeight": 606,
+            "bufferWidth": 729,
+            "bufferHeight": 606,
+            "shadowEnabled": true,
+            "activeAnimationReasons": [],
+            "restorationError": 0
+          },
+          "longTasks": [
+            {
+              "startTime": 19.100000381469727,
+              "duration": 92
+            },
+            {
+              "startTime": 111.2000002861023,
+              "duration": 921
+            },
+            {
+              "startTime": 1418.5,
+              "duration": 61
+            }
+          ],
+          "longTasksOver50": [
+            {
+              "startTime": 19.100000381469727,
+              "duration": 92
+            },
+            {
+              "startTime": 111.2000002861023,
+              "duration": 921
+            },
+            {
+              "startTime": 1418.5,
+              "duration": 61
+            }
+          ]
+        },
+        "mobile": {
+          "warmupMs": 2000,
+          "minimumFps": 30,
+          "pacing": {
+            "requestedDurationMs": 5000,
+            "observedDurationMs": 5016.400000000001,
+            "frameCount": 302,
+            "fps": 60.003189538314324,
+            "medianGapMs": 16.699999999999818,
+            "p95GapMs": 16.700000000000728,
+            "p99GapMs": 16.800000000000182,
+            "maxGapMs": 16.800000000000182,
+            "gapsAbove33_3": 0,
+            "gapsAbove50": 0
+          },
+          "playingMetrics": {
+            "tier": "low",
+            "dpr": 1,
+            "drawCalls": 45,
+            "triangles": 5678,
+            "points": 0,
+            "lines": 12,
+            "geometries": 45,
+            "textures": 0,
+            "programs": 6,
+            "sceneObjects": 109,
+            "instancedMeshes": 19,
+            "instances": 137,
+            "cssWidth": 356,
+            "cssHeight": 267,
+            "bufferWidth": 356,
+            "bufferHeight": 267,
+            "shadowEnabled": false,
+            "activeAnimationReasons": [
+              "playback"
+            ],
+            "restorationError": 0
+          },
+          "settledMetrics": {
+            "tier": "low",
+            "dpr": 1,
+            "drawCalls": 45,
+            "triangles": 5678,
+            "points": 0,
+            "lines": 12,
+            "geometries": 45,
+            "textures": 0,
+            "programs": 6,
+            "sceneObjects": 109,
+            "instancedMeshes": 19,
+            "instances": 137,
+            "cssWidth": 356,
+            "cssHeight": 267,
+            "bufferWidth": 356,
+            "bufferHeight": 267,
+            "shadowEnabled": false,
+            "activeAnimationReasons": [],
+            "restorationError": 0
+          },
+          "longTasks": [
+            {
+              "startTime": 16.300000190734863,
+              "duration": 70
+            },
+            {
+              "startTime": 86.5,
+              "duration": 386
+            }
+          ],
+          "longTasksOver50": [
+            {
+              "startTime": 16.300000190734863,
+              "duration": 70
+            },
+            {
+              "startTime": 86.5,
+              "duration": 386
+            }
+          ]
+        }
+      }
+    },
+    "loop3Acceptance": {
+      "desktop1440": true,
+      "desktop1280": true,
+      "keyboardFocus": true,
+      "mobileOverview": true,
+      "mobileExploded": true,
+      "mobileTouchTargets": true,
+      "mobileRealInteraction": true,
+      "mobileRestoration": true,
+      "reducedMotion": true,
+      "noWebglParity": true,
+      "zoomReflowProxy": true,
+      "contextLossRecovery": true,
+      "desktopFrameMinimum": true,
+      "mobileFrameMinimum": true
+    }
+  },
+  "failures": []
+}
