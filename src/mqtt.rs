@@ -164,10 +164,7 @@ impl MqttPublisher {
 }
 
 /// Bridge between WebSocket broadcaster and MQTT publisher
-pub async fn mqtt_bridge(
-    mut rx: broadcast::Receiver<String>,
-    publisher: Arc<MqttPublisher>,
-) {
+pub async fn mqtt_bridge(mut rx: broadcast::Receiver<String>, publisher: Arc<MqttPublisher>) {
     info!("MQTT bridge started");
 
     while let Ok(json) = rx.recv().await {

@@ -6,8 +6,8 @@
 use axum::{response::IntoResponse, routing::get, Router};
 use lazy_static::lazy_static;
 use prometheus::{
-    register_counter, register_gauge, register_histogram, register_int_counter,
-    Counter, Encoder, Gauge, Histogram, IntCounter, TextEncoder,
+    register_counter, register_gauge, register_histogram, register_int_counter, Counter, Encoder,
+    Gauge, Histogram, IntCounter, TextEncoder,
 };
 
 lazy_static! {

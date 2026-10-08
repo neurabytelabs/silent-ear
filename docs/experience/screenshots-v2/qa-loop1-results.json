@@ -1,0 +1,413 @@
+{
+  "baseUrl": "http://127.0.0.1:3000",
+  "qaLoop": "loop1",
+  "chromium": "<playwright-chromium>",
+  "captures": [
+    {
+      "name": "loop1-overview-1440x900.png",
+      "loop": 1,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "isMobile": false,
+      "mode": "full-assembly",
+      "station": "B1",
+      "axis": "X",
+      "scenario": "within-reference-v1",
+      "step": "not-started",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "facts": {
+        "canvasCount": 1,
+        "selectedMode": "Overview",
+        "selectedStation": "station-control-B1",
+        "selectedAxis": "X direction",
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "loop1-overview-1280x800.png",
+      "loop": 1,
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "isMobile": false,
+      "mode": "full-assembly",
+      "station": "B1",
+      "axis": "X",
+      "scenario": "within-reference-v1",
+      "step": "not-started",
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 70,
+        "triangles": 36890,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 648,
+        "cssHeight": 606,
+        "bufferWidth": 648,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "facts": {
+        "canvasCount": 1,
+        "selectedMode": "Overview",
+        "selectedStation": "station-control-B1",
+        "selectedAxis": "X direction",
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "loop1-overview-mobile-390x844.png",
+      "loop": 1,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "isMobile": true,
+      "mode": "full-assembly",
+      "station": "B1",
+      "axis": "X",
+      "scenario": "within-reference-v1",
+      "step": "not-started",
+      "metrics": {
+        "tier": "low",
+        "dpr": 1,
+        "drawCalls": 45,
+        "triangles": 5678,
+        "points": 0,
+        "lines": 12,
+        "geometries": 45,
+        "textures": 0,
+        "programs": 6,
+        "sceneObjects": 109,
+        "instancedMeshes": 19,
+        "instances": 137,
+        "cssWidth": 356,
+        "cssHeight": 267,
+        "bufferWidth": 356,
+        "bufferHeight": 267,
+        "shadowEnabled": false,
+        "activeAnimationReasons": [],
+        "restorationError": 0
+      },
+      "facts": {
+        "canvasCount": 1,
+        "selectedMode": "Overview",
+        "selectedStation": "station-control-B1",
+        "selectedAxis": "X direction",
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "loop1-inspect-b1-1440x900.png",
+      "loop": 1,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "inspect-station",
+      "station": "B1",
+      "axis": "X",
+      "scenario": "controlled-deviation-v1",
+      "step": 9,
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 49,
+        "triangles": 20274,
+        "points": 0,
+        "lines": 50,
+        "geometries": 67,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.2683281572999748
+      },
+      "facts": {
+        "selectedMode": "Inspect station",
+        "selectedStation": "station-control-B1",
+        "selectedAxis": "X direction",
+        "breadcrumb": "Test cell / Bearing 1 / X direction"
+      }
+    },
+    {
+      "name": "loop1-inspect-b4-1440x900.png",
+      "loop": 1,
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "inspect-station",
+      "station": "B4",
+      "axis": "X",
+      "scenario": "controlled-deviation-v1",
+      "step": 9,
+      "metrics": {
+        "tier": "high",
+        "dpr": 1,
+        "drawCalls": 41,
+        "triangles": 19270,
+        "points": 0,
+        "lines": 50,
+        "geometries": 70,
+        "textures": 1,
+        "programs": 10,
+        "sceneObjects": 122,
+        "instancedMeshes": 18,
+        "instances": 173,
+        "cssWidth": 729,
+        "cssHeight": 606,
+        "bufferWidth": 729,
+        "bufferHeight": 606,
+        "shadowEnabled": true,
+        "activeAnimationReasons": [],
+        "restorationError": 0.2683281572999748
+      },
+      "facts": {
+        "selectedMode": "Inspect station",
+        "selectedStation": "station-control-B4",
+        "selectedAxis": "X direction",
+        "breadcrumb": "Test cell / Bearing 4 / X direction"
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "name": "overview-1440x900",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "overview-1280x800",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "overview-390x844",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "inspect-B1",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    },
+    {
+      "name": "inspect-B4",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "unhandledRejections": [],
+      "requestFailures": [],
+      "badResponses": [],
+      "externalRequests": []
+    }
+  ],
+  "assertions": {
+    "loop1": {
+      "desktop1440": {
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 70,
+          "triangles": 36890,
+          "points": 0,
+          "lines": 50,
+          "geometries": 67,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "facts": {
+          "canvasCount": 1,
+          "selectedMode": "Overview",
+          "selectedStation": "station-control-B1",
+          "selectedAxis": "X direction",
+          "horizontalOverflow": false
+        }
+      },
+      "desktop1280": {
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 70,
+          "triangles": 36890,
+          "points": 0,
+          "lines": 50,
+          "geometries": 67,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 648,
+          "cssHeight": 606,
+          "bufferWidth": 648,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "facts": {
+          "canvasCount": 1,
+          "selectedMode": "Overview",
+          "selectedStation": "station-control-B1",
+          "selectedAxis": "X direction",
+          "horizontalOverflow": false
+        }
+      },
+      "mobile390": {
+        "metrics": {
+          "tier": "low",
+          "dpr": 1,
+          "drawCalls": 45,
+          "triangles": 5678,
+          "points": 0,
+          "lines": 12,
+          "geometries": 45,
+          "textures": 0,
+          "programs": 6,
+          "sceneObjects": 109,
+          "instancedMeshes": 19,
+          "instances": 137,
+          "cssWidth": 356,
+          "cssHeight": 267,
+          "bufferWidth": 356,
+          "bufferHeight": 267,
+          "shadowEnabled": false,
+          "activeAnimationReasons": [],
+          "restorationError": 0
+        },
+        "facts": {
+          "canvasCount": 1,
+          "selectedMode": "Overview",
+          "selectedStation": "station-control-B1",
+          "selectedAxis": "X direction",
+          "horizontalOverflow": false
+        }
+      },
+      "inspectB1": {
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 49,
+          "triangles": 20274,
+          "points": 0,
+          "lines": 50,
+          "geometries": 67,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0.2683281572999748
+        },
+        "facts": {
+          "selectedMode": "Inspect station",
+          "selectedStation": "station-control-B1",
+          "selectedAxis": "X direction",
+          "breadcrumb": "Test cell / Bearing 1 / X direction"
+        }
+      },
+      "inspectB4": {
+        "metrics": {
+          "tier": "high",
+          "dpr": 1,
+          "drawCalls": 41,
+          "triangles": 19270,
+          "points": 0,
+          "lines": 50,
+          "geometries": 70,
+          "textures": 1,
+          "programs": 10,
+          "sceneObjects": 122,
+          "instancedMeshes": 18,
+          "instances": 173,
+          "cssWidth": 729,
+          "cssHeight": 606,
+          "bufferWidth": 729,
+          "bufferHeight": 606,
+          "shadowEnabled": true,
+          "activeAnimationReasons": [],
+          "restorationError": 0.2683281572999748
+        },
+        "facts": {
+          "selectedMode": "Inspect station",
+          "selectedStation": "station-control-B4",
+          "selectedAxis": "X direction",
+          "breadcrumb": "Test cell / Bearing 4 / X direction"
+        }
+      }
+    }
+  },
+  "failures": []
+}

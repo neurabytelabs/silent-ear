@@ -1,225 +1,120 @@
-# 🔊 Silent-Ear
+# Silent-Ear
 
-[![CI](https://github.com/mrsarac/silent-ear/actions/workflows/ci.yml/badge.svg)](https://github.com/mrsarac/silent-ear/actions/workflows/ci.yml)
+[![CI](https://github.com/neurabytelabs/silent-ear/actions/workflows/ci.yml/badge.svg)](https://github.com/neurabytelabs/silent-ear/actions/workflows/ci.yml)
 [![Rust](https://img.shields.io/badge/rust-1.83%2B-orange.svg)](https://www.rust-lang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Industrial Edge AI Anomaly Detection System for Predictive Maintenance**
+**An open-source Rust demonstrator that turns eight vibration channels into per-window RMS values and compares them with a fixed statistical reference, so you can see how a simple mean + kσ rule behaves.**
 
-Silent-Ear is a lightweight, high-performance agent that analyzes vibration data from industrial machinery to detect bearing faults *before* catastrophic failure occurs.
+[**Live demo**](https://neurabytelabs.github.io/silent-ear/) · [Technical flow](docs/experience/PRODUCT_TRUTH.md) · [QA report](docs/experience/QA_REPORT.md)
 
-> 🏭 *"Your factory's sense of hearing."*
+![Silent-Ear: interactive 3D test cell with four bearing stations](docs/images/demo-screenshot.png)
 
-> ⚠️ **Disclaimer:** This software is provided for **demonstration and educational purposes only**. It is not certified for industrial safety-critical applications. Do not use for life-safety or mission-critical systems without proper validation and certification. See [LICENSE](LICENSE) for full terms.
+> **Educational software.** Silent-Ear is a demonstration. It does not diagnose faults, identify damage, predict failure or estimate remaining life, and it is not certified for safety-critical industrial use. See [Limits](#limits).
 
-## ✨ Features
+## What it does
 
-- **🚀 High Performance** — Processes 40M+ data points in under 1.5 seconds
-- **🧠 Statistical AI** — Uses Mean + 3σ anomaly detection (no heavy ML frameworks)
-- **❤️ Health Scoring** — Real-time 0-100% health score for machine degradation
-- **🔌 REST API + WebSocket** — JSON endpoints + real-time updates
-- **📊 Live Dashboard** — Built-in HTML5 visualization with WebSocket
-- **🐳 Docker Ready** — Multi-arch (AMD64 + ARM64) one command deployment
-- **🍓 Raspberry Pi Ready** — Native ARM64 support for edge deployment
+- Reads up to eight channels of raw vibration samples (tab-separated files, e.g. the NASA IMS bearing set) and computes **one RMS value per channel per file**.
+- Learns a **fixed reference** (per-channel mean and population standard deviation) from the first `train_limit` readings.
+- Flags a channel when its RMS is **strictly above** `mean + k·σ` (default `k = 3`). The rule is upper-only.
+- Reports a heuristic **deviation score** (0–100%) derived from the largest absolute z-score. It is not a probability and not a physical health measure.
+- Serves the result over **REST**, **WebSocket**, optional **MQTT** and **Prometheus-format** metrics.
+- Ships an interactive **browser explainer**: a procedural 3D conveyor test cell with four bearing stations, eight channels, scenario stepping and an exploded-signal view. It runs on a fixed, synthetic fixture and needs no backend.
 
-## 🎬 Demo
+## How it works
 
-![Silent-Ear Dashboard Demo](docs/images/demo.gif)
-
-*Real-time anomaly detection with health scoring and live visualization*
-
-## 🚀 Quick Start
-
-### Option 1: Docker (Recommended)
-
-```bash
-# AMD64 (x86_64)
-docker run -p 3000:3000 ghcr.io/mrsarac/silent-ear:latest
-
-# Or with docker-compose
-docker-compose up -d
-# Open http://localhost:3000
+```
+ raw samples (files)  ─┐
+                       ├─▶  RMS per channel  ─▶  reference (first N readings)  ─▶  mean + k·σ  ─▶  score + status
+ mock data (--mock)   ─┘     (8 channels)         mean, population σ, then fixed     upper, strict >      REST · WebSocket
+                                                                                                       MQTT · /metrics
 ```
 
-### Option 2: Raspberry Pi (ARM64)
+1. **Input:** `--simulate` reads files from `data/ims/...`; `--mock` generates eight synthetic RMS-like values.
+2. **RMS:** `sqrt(sum(x²) / n)` per channel per file.
+3. **Reference:** the first `train_limit` readings (default 500) set the mean and σ. They are not updated afterwards; a reset retrains.
+4. **Comparison:** per channel, `x > mean + k·σ` marks a threshold event. Equality is not an event.
+5. **Score:** `1` while the largest absolute z-score is at or below `k`, falling linearly to `0` at `15σ`.
+
+Details and exact formulas: [docs/experience/PRODUCT_TRUTH.md](docs/experience/PRODUCT_TRUTH.md).
+
+## Quick start
+
+Prerequisites: Rust 1.83+ and, only if you rebuild the web page, Node 22.
 
 ```bash
-# Docker on Raspberry Pi 4/5
-docker run -p 3000:3000 ghcr.io/mrsarac/silent-ear:latest
-
-# Or download pre-built binary
-curl -LO https://github.com/mrsarac/silent-ear/releases/latest/download/silent-ear-linux-arm64.tar.gz
-tar -xzf silent-ear-linux-arm64.tar.gz
-./silent-ear-linux-arm64 --mock
-```
-
-### Option 3: From Source
-
-```bash
-# Prerequisites: Rust 1.83+
-git clone https://github.com/mrsarac/silent-ear.git
+git clone https://github.com/neurabytelabs/silent-ear.git
 cd silent-ear
 
-# Download NASA IMS dataset (optional, for full simulation)
-# Place in data/ims/1st_test/1st_test/
-
-# Run simulation
-./run.sh
-# or
-cargo run --release -- --simulate
-
-# Or with mock data (no dataset needed)
+# Run with synthetic data (no dataset needed), then open http://localhost:3000
 cargo run --release -- --mock
+
+# Run against the NASA IMS dataset (download it first, see "Dataset")
+cargo run --release -- --simulate
 ```
 
-## 🏗️ Architecture
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Sensors   │───▶│ DSP Engine  │───▶│  Detector   │
-│ (Vibration) │    │ (RMS Calc)  │    │ (3σ Rule)   │
-└─────────────┘    └─────────────┘    └──────┬──────┘
-                                             │
-                                    ┌────────▼────────┐
-                                    │  Health Score   │
-                                    │   (0-100%)      │
-                                    └────────┬────────┘
-                                             │
-                   ┌─────────────────────────▼─────────────────────────┐
-                   │                 Web Interface                     │
-                   │  REST API (/api/status)  │  Dashboard (HTML5)    │
-                   └───────────────────────────────────────────────────┘
-```
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed documentation.
-
-## 📡 API Reference
-
-### GET /api/status
-
-Returns current system state.
-
-```json
-{
-  "current_file": "2003.10.22.12.06.24",
-  "health_score": 0.94,
-  "status": "WARNING",
-  "latest_readings": [0.142, 0.156, 0.138, 0.487, ...],
-  "is_training": false
-}
-```
-
-### POST /api/control
-
-Control the simulation.
-
-```json
-{ "action": "start" }  // or "stop", "reset"
-```
-
-### POST /api/settings
-
-Configure detector parameters.
-
-```json
-{
-  "threshold": 3.0,
-  "train_limit": 500
-}
-```
-
-### GET /metrics
-
-Prometheus metrics endpoint for observability integration.
-
-```
-# HELP silent_ear_health_score Current health score (0.0 to 1.0)
-# TYPE silent_ear_health_score gauge
-silent_ear_health_score 0.94
-
-# HELP silent_ear_samples_processed_total Total number of samples processed
-# TYPE silent_ear_samples_processed_total counter
-silent_ear_samples_processed_total 1500
-```
-
-## 🔌 MQTT Integration
-
-Enable MQTT publishing for industrial IoT integration:
+Rebuild the browser experience (output goes to `static/`, which the server serves):
 
 ```bash
-# Run with MQTT enabled
-./silent-ear --mock --mqtt
-
-# Configure broker via environment
-MQTT_HOST=broker.local MQTT_PORT=1883 ./silent-ear --mock --mqtt
+npm ci
+npm run lint && npm run typecheck && npm test
+npm run build
 ```
 
-**Topics:**
-- `silent-ear/health` - Health score updates (JSON)
-- `silent-ear/alerts` - Critical alerts with retained messages
+A `Dockerfile` and `docker-compose.yml` are included. The Docker build is exercised by the CI workflow on release tags; it was not run as part of the latest verification.
 
-## 📊 Dataset
+## API
 
-This project uses the **NASA IMS Bearing Dataset** (Set No. 2):
-- 4 bearings monitored continuously until failure
-- 20,480 samples per reading at 20 kHz
-- Bearing 4 fails at end of test (outer race defect)
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/status` | Current state: file, score, status, latest eight readings, training flag |
+| `POST /api/control` | `{"action": "start" \| "stop" \| "reset"}` |
+| `POST /api/settings` | `{"threshold": 3.0, "train_limit": 500}` |
+| `GET /metrics` | Prometheus-format metrics |
+| WebSocket | State broadcasts (see `src/websocket.rs`) |
 
-[Download Dataset](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository)
+Optional MQTT: `./silent-ear --mock --mqtt` with `MQTT_HOST`, `MQTT_PORT`, `MQTT_CLIENT_ID`; topics `silent-ear/health` and `silent-ear/alerts`.
 
-## 🧪 Testing
+## Measured performance
 
-```bash
-cargo test
-```
+Only what was measured is stated here.
 
-```
-running 42 tests
-test detector::tests::test_new_detector ... ok
-test detector::tests::test_train_detector ... ok
-test detector::tests::test_anomaly_detection ... ok
-test detector::tests::test_health_score ... ok
-test websocket::tests::test_broadcaster_broadcast ... ok
-test mqtt::tests::test_mqtt_config_default ... ok
-test metrics::tests::test_health_score_metric ... ok
-... (35 more tests)
+| Check | Result | Conditions |
+|---|---|---|
+| RMS stage throughput | **40.96 M values in 1.29–1.44 s** (3 runs, ~29 M values/s) | Apple M3 Pro, release build, 250 synthetic IMS-format files (20,480 rows × 8 columns), warm file cache, `FileDataSource::calculate_rms` only. Excludes API, dashboard and the simulation's built-in pacing delays. Not yet measured on the real IMS files or on a Raspberry Pi. |
+| Rust tests | 42 / 42 pass | `cargo test --locked`; `cargo clippy -D warnings` and `cargo fmt --check` clean |
+| Frontend tests | 47 / 47 pass | Vitest; ESLint and `tsc --noEmit` clean |
+| Browser page, warm playback | 53.4 fps desktop (1440×900), 60 fps mobile viewport (390×844) | Headless Chromium with software WebGL, see [QA report](docs/experience/QA_REPORT.md). Cold start showed long tasks of up to ~920 ms in that environment. |
+| Page weight | 709 kB JavaScript (193 kB gzip) | Single chunk, no external runtime assets |
 
-test result: ok. 42 passed; 0 failed
-```
+## Limits
 
-## 🛠️ Tech Stack
+- **No real sensor support yet.** Input is file-backed samples or synthetic values. Hardware acquisition (e.g. ADXL345) is on the roadmap, not implemented.
+- **No validation against real faults.** The detector is a statistical comparison with a fixed baseline. It has not been calibrated or validated on a bench or in the field, so it makes no claim about fault detection, fault type, damage, remaining life or lead time before failure.
+- **Fixed baseline.** The reference does not adapt to drift, load or speed changes.
+- **Two sign conventions.** The threshold event is upper-only; the score uses the absolute z-score. They can disagree, and the demo labels them separately.
+- **The browser demo is a fixture.** It replays a controlled synthetic scenario; motion is visually amplified and not reconstructed from sensor data. It does not read from `/api/status`.
+- **Not certified** for safety-critical use. See [LICENSE](LICENSE).
 
-| Component | Technology |
-|-----------|------------|
-| Language | Rust 🦀 |
-| Async Runtime | Tokio |
-| Web Framework | Axum |
-| DSP | Native (RMS calculation) |
-| AI | Statistical Process Control |
+## Dataset
 
-## 🗺️ Roadmap
+The simulation mode expects the [NASA IMS Bearing Dataset](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository) placed under `data/ims/` (20,480 samples per reading at 20 kHz). The dataset is not included and is not needed for `--mock` or for the browser demo.
 
-- [x] WebSocket real-time updates
-- [x] Raspberry Pi / ARM64 support
-- [x] Multi-arch Docker images
-- [x] MQTT integration (industrial IoT)
-- [x] Prometheus metrics export (`/metrics`)
-- [ ] Real hardware sensor support (ADXL345)
-- [ ] OPC-UA support (factory automation)
-- [ ] Machine learning with Burn framework
+## Roadmap
 
-## 🤝 Contributing
+- [x] REST, WebSocket, MQTT, Prometheus export
+- [x] ARM64 build configuration and multi-arch Dockerfile
+- [x] Interactive browser explainer
+- [ ] Real hardware sensor input (ADXL345)
+- [ ] Calibrated bench measurements and a written validation protocol
+- [ ] OPC-UA
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+## Contributing
 
-## 📄 License
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-MIT License - see [LICENSE](LICENSE) for details.
+## License
 
-## 🏢 About
+MIT, see [LICENSE](LICENSE).
 
-Part of the **NeuraByte Labs** ecosystem — Building autonomous AI systems that interact with the physical world.
-
----
-
-*Built with 🦀 Rust in Germany*
+Part of [NeuraByte Labs](https://neurabytelabs.com).

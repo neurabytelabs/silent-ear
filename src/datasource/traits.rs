@@ -47,6 +47,8 @@ impl SensorReading {
 /// - Mock (testing)
 /// - Hardware sensor (ADXL345)
 #[allow(dead_code)]
+// async_trait expands must_use twice; lint is a false positive.
+#[allow(clippy::double_must_use)]
 #[async_trait]
 pub trait DataSource: Send + Sync {
     /// Initialize the data source

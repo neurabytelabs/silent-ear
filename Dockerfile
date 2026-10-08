@@ -1,7 +1,18 @@
 # Silent-Ear: Industrial Edge AI Anomaly Detection
 # Multi-stage, multi-arch build (AMD64 + ARM64)
 
-# Stage 1: Build
+# Stage 1: Build the self-hosted browser experience
+FROM node:22-alpine AS frontend-builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY frontend ./frontend
+RUN npm run build
+
+# Stage 2: Build the Rust service
 FROM --platform=$BUILDPLATFORM rust:1.83-slim AS builder
 
 ARG TARGETPLATFORM
@@ -38,9 +49,9 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
     fi
 RUN rm -rf src
 
-# Copy source code
+# Copy source code and the generated browser experience
 COPY src ./src
-COPY static ./static
+COPY --from=frontend-builder /app/static ./static
 
 # Build release binary
 RUN touch src/main.rs && \
@@ -51,7 +62,7 @@ RUN touch src/main.rs && \
         cargo build --release; \
     fi
 
-# Stage 2: Runtime
+# Stage 3: Runtime
 FROM debian:bookworm-slim
 
 WORKDIR /app
