@@ -6,7 +6,7 @@
 
 **An open-source Rust demonstrator that turns eight vibration channels into per-window RMS values and compares them with a fixed statistical reference, so you can see how a simple mean + kσ rule behaves.**
 
-[**Live demo**](https://neurabytelabs.github.io/silent-ear/) · [Technical flow](docs/experience/PRODUCT_TRUTH.md) · [QA report](docs/experience/QA_REPORT.md)
+[**Live demo**](https://silent-ear.neurabytelabs.com/) · [Technical flow](docs/experience/PRODUCT_TRUTH.md) · [QA report](docs/experience/QA_REPORT.md)
 
 ![Silent-Ear: interactive 3D test cell with four bearing stations](docs/images/demo-screenshot.png)
 
