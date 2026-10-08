@@ -121,6 +121,15 @@ input:focus-visible,
   letter-spacing: 0.04em;
 }
 
+.lab-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .site-header nav {
   display: flex;
   gap: clamp(1rem, 2.5vw, 2.25rem);

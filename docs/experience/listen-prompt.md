@@ -1,5 +1,7 @@
 # Listen: the prompt behind `/listen/`
 
+> **Since publication (08.10.2026):** the page is the main demo at `/` (its files stay under `frontend/public/listen/`; `/listen/` redirects to `/`), and the 3D test cell moved to `/cell/`. #215811 is now in the Proof of Invention atlas as v2 (`bearing-monitor`), so the footer reads "Built from Proof of Invention prompt #215811 with a coding agent." The prompt and run log below are unchanged.
+
 The page at `/listen/` was built from a prompt with a coding agent, in the manner of [Proof of Invention](https://proof.neurabytelabs.com/): a numbered build dare whose every sentence comes from a gene and an atlas field, plus a written contract that fixes the product decisions. This file keeps the prompt word for word, so the page can be traced back to it, and logs every follow-up prompt that was sent after the first run.
 
 ## Where the dare comes from

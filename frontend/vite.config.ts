@@ -10,6 +10,11 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     target: 'es2020',
+    // The bearing lab (frontend/public/index.html) is the main page at /;
+    // the React 3D test cell is built to /cell/.
+    rollupOptions: {
+      input: decodeURIComponent(new URL('./cell/index.html', import.meta.url).pathname),
+    },
   },
   server: {
     host: '127.0.0.1',
