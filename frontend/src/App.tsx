@@ -219,6 +219,7 @@ export function App() {
           <a href="#scenario-lab">Scenario lab</a>
           <a href="#technical-flow">Technical flow</a>
         </nav>
+        <a className="lab-link" href="../">← Bearing lab (main demo)</a>
       </header>
 
       <main id="main-content">
@@ -402,7 +403,8 @@ export function App() {
       </main>
 
       <footer>
-        <span>Silent-Ear · Controlled product experience</span>
+        <span>Silent-Ear · 3D test cell</span>
+        <a href="../">← Main demo: listen to a bearing fail</a>
         <span>{snapshot.fixtureContract} · SAMPLE DATA</span>
       </footer>
     </>

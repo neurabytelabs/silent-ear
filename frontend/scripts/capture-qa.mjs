@@ -3,6 +3,8 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const baseUrl = process.env.SILENT_EAR_URL ?? "http://127.0.0.1:3000";
+// The 3D test cell lives at /cell/; the bearing lab is the main page at /.
+const cellPath = process.env.SILENT_EAR_CELL_PATH ?? "/cell/";
 const baseOrigin = new URL(baseUrl).origin;
 const qaLoop = process.env.SILENT_EAR_QA_LOOP ?? "all";
 const outputDirectory = resolve("docs/experience/screenshots-v2");
@@ -69,7 +71,7 @@ async function openPage(context, evidence, path = "/") {
       evidence.badResponses.push(`${response.status()} ${response.url()}`);
     }
   });
-  await page.goto(`${baseUrl}${path}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${cellPath}${path.replace(/^\//, "")}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(850);
   return page;
 }

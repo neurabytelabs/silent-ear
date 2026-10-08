@@ -33,6 +33,13 @@ describe("Silent-Ear accessible experience", () => {
     expect(screen.getByRole("table", { name: /Current per-window RMS values/ })).toBeVisible();
   });
 
+  it("links back to the bearing lab, the main demo at the site root", () => {
+    render(<App />);
+
+    expect(screen.getByRole("link", { name: "← Bearing lab (main demo)" })).toHaveAttribute("href", "../");
+    expect(screen.getByRole("link", { name: /Main demo: listen to a bearing fail/ })).toHaveAttribute("href", "../");
+  });
+
   it("shows no numeric score before baseline readiness", () => {
     render(<App />);
 

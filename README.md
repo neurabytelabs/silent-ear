@@ -6,9 +6,11 @@
 
 **An open-source Rust demonstrator that turns eight vibration channels into per-window RMS values and compares them with a fixed statistical reference, so you can see how a simple mean + kσ rule behaves.**
 
-[**Live demo**](https://silent-ear.neurabytelabs.com/) · [Technical flow](docs/experience/PRODUCT_TRUTH.md) · [QA report](docs/experience/QA_REPORT.md)
+[**Live demo**](https://silent-ear.neurabytelabs.com/) · [3D test cell](https://silent-ear.neurabytelabs.com/cell/) · [Technical flow](docs/experience/PRODUCT_TRUTH.md) · [QA report](docs/experience/QA_REPORT.md)
 
-![Silent-Ear: interactive 3D test cell with four bearing stations](docs/images/demo-screenshot.png)
+**Live demo:** hear a simulated bearing wear out, then follow its samples through resonance and the envelope spectrum to Silent-Ear's mean + kσ rule, all computed in your browser.
+
+![Silent-Ear bearing lab: a bearing cutaway and a raw scope with predicted outer race impacts](docs/images/listen-screenshot.png)
 
 > **Educational software.** Silent-Ear is a demonstration. It does not diagnose faults, identify damage, predict failure or estimate remaining life, and it is not certified for safety-critical industrial use. See [Limits](#limits).
 
@@ -19,7 +21,9 @@
 - Flags a channel when its RMS is **strictly above** `mean + k·σ` (default `k = 3`). The rule is upper-only.
 - Reports a heuristic **deviation score** (0–100%) derived from the largest absolute z-score. It is not a probability and not a physical health measure.
 - Serves the result over **REST**, **WebSocket**, optional **MQTT** and **Prometheus-format** metrics.
-- Ships an interactive **browser explainer**: a procedural 3D conveyor test cell with four bearing stations, eight channels, scenario stepping and an exploded-signal view. It runs on a fixed, synthetic fixture and needs no backend.
+- Ships a **bearing lab** as the main browser demo (`/`): a simulated SKF 6205 bearing generated sample by sample, with sound, an outer race, inner race or ball defect, envelope analysis and the same mean + kσ rule. Fault naming, kurtosis and crest factor there are a teaching layer, not something the Rust engine computes. Built from [prompt #215811](docs/experience/listen-prompt.md).
+- Ships a **3D test cell** (`/cell/`): a procedural conveyor with four bearing stations, eight channels, scenario stepping and an exploded-signal view. It runs on a fixed, synthetic fixture.
+- Both pages need no backend.
 
 ## How it works
 
@@ -93,7 +97,7 @@ Only what was measured is stated here.
 - **No validation against real faults.** The detector is a statistical comparison with a fixed baseline. It has not been calibrated or validated on a bench or in the field, so it makes no claim about fault detection, fault type, damage, remaining life or lead time before failure.
 - **Fixed baseline.** The reference does not adapt to drift, load or speed changes.
 - **Two sign conventions.** The threshold event is upper-only; the score uses the absolute z-score. They can disagree, and the demo labels them separately.
-- **The browser demo is a fixture.** It replays a controlled synthetic scenario; motion is visually amplified and not reconstructed from sensor data. It does not read from `/api/status`.
+- **The browser demos are simulations.** The bearing lab computes its samples from a physics model and a scripted degradation; the 3D test cell replays a controlled synthetic fixture. Motion is visually amplified and not reconstructed from sensor data. Neither reads from `/api/status`.
 - **Not certified** for safety-critical use. See [LICENSE](LICENSE).
 
 ## Dataset
@@ -104,7 +108,7 @@ The simulation mode expects the [NASA IMS Bearing Dataset](https://www.nasa.gov/
 
 - [x] REST, WebSocket, MQTT, Prometheus export
 - [x] ARM64 build configuration and multi-arch Dockerfile
-- [x] Interactive browser explainer
+- [x] Interactive browser explainers (bearing lab, 3D test cell)
 - [ ] Real hardware sensor input (ADXL345)
 - [ ] Calibrated bench measurements and a written validation protocol
 - [ ] OPC-UA
